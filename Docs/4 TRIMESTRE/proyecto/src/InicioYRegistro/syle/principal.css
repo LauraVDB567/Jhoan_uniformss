@@ -1,0 +1,154 @@
+@import "~leaflet/dist/leaflet.css";
+
+.body-principal {
+    font-family: 'Bacasime Antique', serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to bottom right, #f0f8ff, #e0f7fa);
+}
+
+.container-principal {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-principal {
+    display: flex;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    justify-content: space-between;
+    padding: 10px 20px;
+    z-index: 30;
+}
+
+.logo-principal {
+    color: rgb(0, 0, 0);
+    font-size: 25px;
+    font-weight: 750;
+}
+
+.menu-principal {
+    display: flex;
+    align-items: center;
+}
+
+.menu-principal .navbar-principal ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-principal .navbar-principal ul li {
+    position: relative;
+    float: left;
+}
+
+.menu-principal .navbar-principal ul li a {
+    font-size: 18px;
+    padding: 20px;
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.body-principal-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+    padding: 0 20px;
+}
+
+.header-txt-principal {
+    width: 50%;
+    padding: 20px;
+}
+
+.header-txt-principal h2 {
+    font-size: 35px;
+    line-height: 50px;
+    font-weight: 600;
+    color: black;
+}
+
+.header-txt-principal p {
+    font-size: 16px;
+    color: #545454;
+}
+
+.header-img-principal {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+}
+
+.header-img-principal img {
+    max-width: 100%;
+    height: auto;
+}
+
+.footer-principal {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.footer-principal h1 {
+    font-size: 30px;
+}
+
+.btn-outline-info-principal {
+    margin: 10px;
+}
+
+@media(max-width: 991px) {
+    .body-principal-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .header-txt-principal {
+        width: 100%;
+        text-align: center;
+    }
+
+    .header-img-principal {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .header-img-principal img {
+        width: 80%;
+    }
+
+    .footer-principal {
+        padding: 30px;
+    }
+}
+
+.btn-outline-info-principal {
+    margin: 10px;
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.btn-info-principal {
+    margin: 10px;
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+.footer-buttons {
+ 
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.footer-buttons a {
+    flex: 1;
+    margin: 0 10px;
+}
+

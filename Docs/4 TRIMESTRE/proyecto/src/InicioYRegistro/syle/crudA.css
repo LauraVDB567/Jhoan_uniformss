@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.body-crud {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+}
+
+.crud-App {
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  max-width: 700px;
+  margin: auto;
+  margin-top: 50px;
+}
+
+.h1 {
+  text-align: center;
+  background: black;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 2.5rem; 
+  font-weight: bold; 
+  margin-bottom: 20px;
+}
+
+.crud-input {
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  width: 100%;
+  border: 1px solid #ced4da;
+}
+
+.crud-input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.crud-btn {
+  width: 50%;
+  margin-top: 10px;
+}
+
+.crud-table-light tbody tr {
+  margin-bottom: 10px;
+}
+
+.crud-table-light td {
+  padding: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.crud-table-light tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+.crud-table-light th,
+.crud-table-light td {
+  padding: 10px;
+  text-align: left;
+}
+
+.crud-table-light th {
+  background-color: #e9ecef;
+}
+
+.crud-table-light tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.crud-btn {
+  width: 30%;
+  margin-top: 10px;
+}
+
+.btn-group .crud-btn {
+  margin-right: 10px;
+}
+
+.btn-group .crud-btn:last-child {
+  margin-right: 0;
+}

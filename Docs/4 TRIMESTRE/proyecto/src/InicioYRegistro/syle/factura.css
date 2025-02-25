@@ -1,0 +1,100 @@
+.factura-container {
+  background-color: aliceblue;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.factura-box {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 600px;
+}
+
+.factura-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.factura-info input, .factura-info select {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.factura-info input[readonly] {
+  background-color: #f4f4f4;
+}
+
+.productos h3 {
+  margin-top: 20px;
+}
+
+.productos table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.productos table th, .productos table td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.total {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.metodo-pago {
+  margin-top: 20px;
+}
+
+.payment-options input[type="radio"] {
+  margin-right: 10px;
+}
+
+.payment-options img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.actions button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.actions button:disabled {
+  background-color: #ccc;
+}
+
+.actions button:hover {
+  background-color: #45a049;
+}
+
+
+
+
+
+
+
+
+  
+  

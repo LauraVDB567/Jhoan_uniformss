@@ -1,0 +1,58 @@
+.body-recuperar {
+    background: linear-gradient(135deg, #80d0ff, #0091ea);
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+.boton1{    
+    padding: 12px;
+    background: linear-gradient(90deg, rgba(82, 51, 255, 1) 25%, rgba(51, 66, 255, 1) 100%);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    color: white;
+    text-transform: uppercase;
+    font-size: 14px;
+    cursor: pointer;
+    width: 200px;
+    height: 45px;
+    border: none;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 10px;
+    margin-left: 70px;
+    
+}
+.boton1:hover{    
+    padding: 12px;
+    background: rgb(53, 179, 151);    
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    color: rgb(0, 0, 0);
+    text-transform: uppercase;
+    font-size: 14px;
+    cursor: pointer;
+    width: 200px;
+    height: 45px;
+    border: none;
+    border-radius: 5px;
+    transition: 1.5s;
+    margin-top: 10px;
+    margin-left: 70px;
+    
+}
+.put1{
+    display: flex;
+    align-items: center;
+    height: 50px;
+    background: #f5f5f5;
+    border-radius: 25px;
+    padding: 0 15px;
+    border: none;
+}
