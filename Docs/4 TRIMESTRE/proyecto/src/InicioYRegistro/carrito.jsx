@@ -31,6 +31,10 @@ import corbata_gris from "../Archivos/corbata gris.png"
 import "./syle/carritocompras.css";
 import { useNavigate } from 'react-router-dom';
 
+
+
+
+
 const productosData = [
   { nombre: 'Saco Verde', precio: 45000, imagen: saco_verde, categoria: 'saco' },
   { nombre: 'Saco Negro', precio: 45000, imagen: saco_negro, categoria: 'saco' },
@@ -65,7 +69,7 @@ const productosData = [
 const CarritoCompras = () => {
     const [carrito, setCarrito] = useState([]);
     const [busqueda, setBusqueda] = useState("");
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const agregarAlCarrito = (producto) => {
         const existingProduct = carrito.find(item => item.nombre === producto.nombre);
@@ -106,6 +110,8 @@ const CarritoCompras = () => {
     const generarFactura = () => {
         navigate('/factura', { state: { carrito, total } });
     };
+
+    
 
     const productosFiltrados = productosData.filter(producto =>
         producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -150,6 +156,9 @@ const CarritoCompras = () => {
                 </ul>
                 <p>Total: ${total.toFixed(2)}</p>
                 <button onClick={generarFactura}>Generar Factura</button>
+
+                
+
             </div>
         </div>
     );
