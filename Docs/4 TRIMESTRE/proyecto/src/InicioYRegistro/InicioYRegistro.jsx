@@ -5,57 +5,66 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 
+const adminAccounts = [
+    { correo: "dkim44243@gmail.com", contraseña: "twicebestgg" },
+    { correo: "valentinadb13l@gmail.com", contraseña: "12345" },
+    { correo: "vallejolorena37@gmail.com", contraseña: "54321" },
+    { correo: "valentinavaquezrodriguez00@gmail.com", contraseña: "56789" }
+];
+
+export { adminAccounts }
+
+
 const InicioYRegistro = () => {
     const navigate = useNavigate();
     const [action, setAction] = useState("Registro");
-    const [apodo, setApodo] = useState('');
+    const [nombre, setNombre] = useState('');
     const [apellido, setApellido] = useState('');
     const [correo, setCorreo] = useState('');
     const [contraseña, setContraseña] = useState('');
     const [error, setError] = useState('');
 
-    const adminAccounts = [
-        { correo: "dkim44243@gmail.com", contraseña: "twicebestgg" },
-        { correo: "valentinadb13l@gmail.com", contraseña: "12345" },   
-        { correo: "vallejolorena37@gmail.com", contraseña: "54321" },
-        { correo: "valentinavaquezrodriguez00@gmail.com", contraseña: "56789" }
-    ];
 
     const handleSubmit = async () => {
         if (action === "Registro") {
-            if (apodo && apellido && correo && contraseña) {
+            if (nombre && apellido && correo && contraseña) {
                 try {
-                    const nuevoUsuario = { apodo, apellido, correo, contraseña };
+                    const nuevoUsuario = { nombre, apellido, correo, contraseña };
                     await axios.post('http://localhost:5001/api/registro', nuevoUsuario);
                     setAction("Inicio Sesión");
                     setError('');
                     resetFields();
+
+
+
+
                 } catch (error) {
                     setError('Error al registrar el usuario');
                 }
             } else {
                 setError('Por favor, completa todos los campos.');
             }
-        } else {
+        } else {/* iniciar sesión */
             if (correo && contraseña) {
-                const cleanCorreo = correo.trim();  
+                const cleanCorreo = correo.trim();
                 const cleanContraseña = contraseña.trim();
+                localStorage.setItem("Sesion", true)
+                localStorage.setItem("correos", correo)
 
-              
-                const adminLogin = adminAccounts.find(admin => 
+                const adminLogin = adminAccounts.find(admin =>
                     admin.correo === cleanCorreo && admin.contraseña === cleanContraseña
                 );
 
                 if (adminLogin) {
-                    navigate('/crud'); 
+                    navigate('/crud');
                 } else {
                     try {
                         const response = await axios.post('http://localhost:5001/api/login', { correo: cleanCorreo, contraseña: cleanContraseña });
                         if (response.status === 200) {
 
-                 
 
-                            navigate('/carrito'); 
+
+                            navigate('/carrito');
                         }
                     } catch (error) {
                         setError('Correo o contraseña incorrectos.');
@@ -68,7 +77,7 @@ const InicioYRegistro = () => {
     };
 
     const resetFields = () => {
-        setApodo('');
+        setNombre('');
         setApellido('');
         setCorreo('');
         setContraseña('');
@@ -131,22 +140,22 @@ const InicioYRegistro = () => {
                         <>
                             <div className='registro-inputs'>
                                 <div className="registro-input">
-                                    <input 
-                                        type="texto" 
-                                        placeholder="apodo" 
-                                        value={apodo}
-                                        onChange={(e) => setApodo(e.target.value)} 
+                                    <input
+                                        type="texto"
+                                        placeholder="nombre"
+                                        value={nombre}
+                                        onChange={(e) => setNombre(e.target.value)}
                                     />
                                 </div>
                             </div>
                             <br />
                             <div className='registro-inputs'>
                                 <div className="registro-input">
-                                    <input 
-                                        type="texto" 
-                                        placeholder="apellido" 
+                                    <input
+                                        type="texto"
+                                        placeholder="apellido"
                                         value={apellido}
-                                        onChange={(e) => setApellido(e.target.value)} 
+                                        onChange={(e) => setApellido(e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -155,26 +164,26 @@ const InicioYRegistro = () => {
                     <br />
                     <div className='registro-inputs'>
                         <div className="registro-input">
-                            <input 
-                                type="email" 
-                                placeholder="correo" 
+                            <input
+                                type="email"
+                                placeholder="correo"
                                 value={correo}
-                                onChange={(e) => setCorreo(e.target.value)} 
+                                onChange={(e) => setCorreo(e.target.value)}
                             />
                         </div>
                     </div>
                     <br />
                     <div className='registro-inputs'>
                         <div className="registro-input">
-                            <input 
-                                type="password" 
-                                placeholder="contraseña" 
+                            <input
+                                type="password"
+                                placeholder="contraseña"
                                 value={contraseña}
-                                onChange={(e) => setContraseña(e.target.value)} 
+                                onChange={(e) => setContraseña(e.target.value)}
                             />
                         </div>
                     </div>
-                    
+
                     {action === "Inicio Sesión" ? null : (
                         <div className='registro-forgot-password'>
                             <br />
@@ -185,8 +194,8 @@ const InicioYRegistro = () => {
                     {error && <div className='registro-error-message'>{error}</div>}
                     <div className='registro-submit-container'>
                         <center>
-                            <div 
-                                className={action === "Inicio Sesión" ? "registro-submit gray" : "registro-submit"} 
+                            <div
+                                className={action === "Inicio Sesión" ? "registro-submit gray" : "registro-submit"}
                                 onClick={handleSubmit}
                             >
                                 {action === "Inicio Sesión" ? 'Ingresar' : 'Registrar'}
@@ -199,7 +208,10 @@ const InicioYRegistro = () => {
     );
 };
 
+
 export default InicioYRegistro;
+
+
 
 
 
