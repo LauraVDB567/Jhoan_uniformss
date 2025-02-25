@@ -1,27 +1,31 @@
-import {  UseNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { InicioYRegistro, adminAccounts } from "./InicioYRegistro";
 
-import  adminAccounts from "./InicioYRegistro" ;
-const close = ({children})=> {
-  
-  const sesion =localStorage.getItem ("Sesion")
+
+const close = ({ children }) => {
+  const sesion = localStorage.getItem("Sesion")
   const correo = localStorage.getItem("correos")
-  const Navigate = UseNavigate();
+  const esAdmin = adminAccounts.some(account => account.correo === correo);
 
 
 
-if(sesion== false || !sesion)
-{
-    navigate ('/')
-}
-  if(correo != adminAccounts[0].correo || correo != adminAccounts[1].correo  || correo != adminAccounts[2].correo  || correo != adminAccounts[3].correo)
-  {
-    navigate('/')
+  if (sesion == false || !sesion) {
+    return <Navigate to="/" />
+
   }
 
-return children;
+  if (!esAdmin) {
+    return <Navigate to="/" />
+  }
+
+
+  return children;
 }
 
 export default close
+
+
+
 
 
 
