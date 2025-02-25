@@ -1,0 +1,33 @@
+.body-principal  {
+    font-family: 'Bacasime Antique', serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style: none;
+   
+}
+
+.body-Principal{
+    margin-top: 10%;
+    display: flex;
+    align-items: right;
+}
+
+.header-img{
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.flooter-principal{
+    display: flex;
+    align-items: right;
+    margin-left: 40px;
+}
+
+.btn-outline-info{
+    width: 170px;
+    height: 50px;
+    margin-top: 100px;
+}
+ 

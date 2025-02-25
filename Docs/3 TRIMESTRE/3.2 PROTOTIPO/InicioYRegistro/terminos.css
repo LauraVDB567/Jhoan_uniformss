@@ -1,0 +1,21 @@
+.titulo-terminos h1{
+    margin-top: 0px;
+}
+
+    
+.body-terminos{
+    background-color: #f0f0f0;
+}
+.texto-terminos {
+    display:flex;
+    flex-wrap:wrap;
+    margin-top: 10px;
+    text-align:start;
+}
+.tex-terminos h3 {
+    display:flex;
+    flex-wrap:wrap;
+    text-align:start;
+    color:#666;
+    margin: 80px;
+}
