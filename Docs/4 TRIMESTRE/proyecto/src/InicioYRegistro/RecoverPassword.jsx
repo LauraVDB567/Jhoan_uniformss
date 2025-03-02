@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './syle/recover.css'
+import './syle/recover.css';
 
 function RecoverPassword() {
   const [email, setEmail] = useState('');
@@ -29,7 +29,8 @@ function RecoverPassword() {
 
   return (
     <div className="recover-password-body">
-      <nav className="navbar navbar-expand-lg navbar-light bg-light recover-password-navbar fixed-top">
+    
+      <nav className="navbar navbar-expand-lg navbar-light bg-light principal-navbar-asww">
         <div className="container-fluid">
           <a className="navbar-brand">
             <p>Sistema De Información Jhoan Uniforms</p>
@@ -61,11 +62,14 @@ function RecoverPassword() {
         </div>
       </nav>
 
-      <div className="recover-password-container mt-5 pt-5">
-        <h1 className="recover-password-text">Recuperación de Contraseña</h1>
-        <div className="recover-password-underline"></div>
-        <form onSubmit={handleSubmit} className="recover-password-form">
-          <div className="recover-password-input">
+ 
+      <div className="recover-password-container">
+        <div className="recover-header">
+          <h1 className="recover-text">Recuperación de Contraseña</h1>
+          <div className="recover-underline"></div>
+        </div>
+        <form onSubmit={handleSubmit} className="recover-inputs">
+          <div className="recover-input">
             <input
               type="email"
               placeholder="Introduce tu email"
@@ -74,13 +78,13 @@ function RecoverPassword() {
               required
             />
           </div>
-          <div className="recover-password-submit-container">
-            <button type="submit" className="recover-password-submit" disabled={loading}>
+          <div className="recover-submit-container">
+            <button type="submit" className="recover-submit" disabled={loading}>
               {loading ? 'Enviando...' : 'Recuperar Contraseña'}
             </button>
           </div>
         </form>
-        {message && <p className="recover-password-error">{message}</p>}
+        {message && <p className="registro-error-message">{message}</p>}
       </div>
     </div>
   );
