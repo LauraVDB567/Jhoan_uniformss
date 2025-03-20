@@ -1,0 +1,64 @@
+CREATE TABLE IF NOT EXISTS `roles` (
+  `rol_code` INT(11) NOT NULL AUTO_INCREMENT,
+  `rol_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`rol_code`)
+) ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+-- -----------------------------------------------------
+-- Tabla `usuarios`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `rol_code` INT(11) NOT NULL,
+  `apodo` VARCHAR(45) NOT NULL,
+  `apellido` VARCHAR(45) NOT NULL,
+  `contraseña` VARCHAR(250) NOT NULL,
+  `correo` VARCHAR(250) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `correo_UNIQUE` (`correo` ASC) VISIBLE
+) ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+-- -----------------------------------------------------
+-- Tabla `factura`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `factura` (
+  `numeroFactura` VARCHAR(45) NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  `correo` VARCHAR(250) NOT NULL,
+  `telefono` VARCHAR(45) NOT NULL,
+  `productos` VARCHAR(255) NOT NULL,
+  `total` DOUBLE NOT NULL,
+  `metodoPago` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`numeroFactura`)
+) ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+-- -----------------------------------------------------
+-- Tabla `devolucion`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `devolucion` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `correo` VARCHAR(250) NOT NULL,
+  `numeroFactura` VARCHAR(45) NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  `telefono` VARCHAR(45) NOT NULL,
+  `productos` VARCHAR(255) NOT NULL,
+  `total` DOUBLE NOT NULL,
+  `metodoPago` VARCHAR(45) NOT NULL,
+  `comentarios` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+-- -----------------------------------------------------
+-- Tabla `administrador`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `administrador` (
+  `correo` VARCHAR(250) NOT NULL,
+  `contraseña` VARCHAR(250) NOT NULL,
+  `rol_code` INT(11) NOT NULL,
+  PRIMARY KEY (`correo`)
+) ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
