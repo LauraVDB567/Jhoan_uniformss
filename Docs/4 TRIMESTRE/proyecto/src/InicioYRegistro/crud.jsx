@@ -9,7 +9,7 @@ function Crud() {
 
   const cerrarsesion = () => {
     localStorage.clear();
-    navigate('/');
+    navigate("/", {replace : true});
   };
 
   const getFacturas = async () => {
@@ -90,4 +90,5 @@ function Crud() {
 }
 
 export default Crud;
+
 
