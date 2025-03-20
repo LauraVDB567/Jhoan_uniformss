@@ -3,81 +3,139 @@ const app = express();
 const mysql = require("mysql");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 app.use(cors());
 app.use(express.json());
 
+// Configurar la conexión a MySQL
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "basedatos"
+    database: "datos"
 });
 
-db.connect(err => {
+// Conectar a la base de datos
+ db.connect((err) => {
     if (err) {
-        console.error('Error de conexión a la base de datos:', err);
+        console.error("Error al conectar a la base de datos:", err);
         return;
     }
-    console.log('Conectado a la base de datos MySQL');
+    console.log("Conectado a la base de datos MySQL");
 });
 
-app.post('/api/registro', async (req, res) => {
+// Función para hashear con SHA-256 (para el administrador)
+const hashSHA256 = (password) => {
+    return crypto.createHash("sha256").update(password).digest("hex");
+};
+
+// Registro de usuarios (rol_code = 2 por defecto para usuarios normales)
+app.post("/api/registro", async (req, res) => {
     const { apodo, apellido, correo, contraseña } = req.body;
 
     try {
-  
         const hashedPassword = await bcrypt.hash(contraseña, 10);
 
-      
         db.query(
-            'INSERT INTO usuarios (apodo, apellido, correo, contraseña) VALUES (?, ?, ?, ?)', 
+            "INSERT INTO usuarios (rol_code, apodo, apellido, correo, contraseña) VALUES (2, ?, ?, ?, ?)",
             [apodo, apellido, correo, hashedPassword],
             (err) => {
                 if (err) {
-                    console.error("Error al registrar:", err);
-                    return res.status(500).send("Error al registrar el usuario");
+                    console.error(" Error al registrar el usuario:", err);
+                    return res.status(500).json({ error: "Error al registrar el usuario" });
                 }
-                res.send("Usuario registrado con éxito");
+                res.status(201).json({ message: " Usuario registrado con éxito" });
             }
         );
     } catch (err) {
-        console.error("Error al registrar:", err);
-        res.status(500).send("Error al registrar el usuario");
+        console.error("Error en el registro:", err);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
-app.post('/api/login', (req, res) => {
+// Función para verificar credenciales en ambas tablas
+const verificarCredenciales = (correo, contraseña, callback) => {
+    // Buscar en la tabla administrador (SHA-256)
+    db.query(
+        "SELECT correo, contraseña, rol_code FROM administrador WHERE correo = ?",
+        [correo],
+        (err, adminResults) => {
+            if (err) return callback(err, null);
+
+            if (adminResults.length > 0) {
+                const admin = adminResults[0];
+                const hashedPassword = hashSHA256(contraseña);
+
+                if (hashedPassword === admin.contraseña) {
+                    return callback(null, {
+                        rol_code: admin.rol_code,
+                        correo: admin.correo,
+                    }); // Es administrador
+                }
+                return callback(null, null); // Contraseña incorrecta
+            }
+
+            // Si no es administrador, buscar en usuarios (bcrypt)
+            db.query(
+                "SELECT correo, contraseña, rol_code FROM usuarios WHERE correo = ?",
+                [correo],
+                (err, userResults) => {
+                    if (err) return callback(err, null);
+
+                    if (userResults.length > 0) {
+                        const usuario = userResults[0];
+
+                        bcrypt.compare(
+                            contraseña,
+                            usuario.contraseña,
+                            (err, isMatch) => {
+                                if (err) return callback(err, null);
+                                if (isMatch) {
+                                    return callback(null, {
+                                        rol_code: usuario.rol_code,
+                                        correo: usuario.correo,
+                                    }); // Es usuario normal
+                                }
+                                return callback(null, null); // Contraseña incorrecta
+                            }
+                        );
+                    } else {
+                        return callback(null, null); // No encontrado
+                    }
+                }
+            );
+        }
+    );
+};
+
+// Inicio de sesión
+app.post("/api/login", (req, res) => {
     const { correo, contraseña } = req.body;
 
-   
-    db.query('SELECT * FROM usuarios WHERE correo = ?', [correo], (error, results) => {
-        if (error) {
-            console.error("Error en la consulta:", error);
-            return res.status(500).send('Error en la consulta');
+    verificarCredenciales(correo, contraseña, (err, usuario) => {
+        if (err) {
+            console.error("Error al verificar credenciales:", err);
+            return res.status(500).json({ error: "Error al iniciar sesión" });
         }
 
-        if (results.length === 0) {
-            return res.status(404).send('Usuario no encontrado');
+        if (!usuario) {
+            return res.status(401).json({ error: "Usuario o contraseña incorrectos" });
         }
 
-        const usuario = results[0];
-
-        
-        bcrypt.compare(contraseña, usuario.contraseña, (err, isMatch) => {
-            if (err) {
-                console.error("Error al comparar contraseñas:", err);
-                return res.status(500).send("Error al iniciar sesión");
-            }
-            if (isMatch) {
-                res.send('Inicio de sesión exitoso');
-            } else {
-                res.status(400).send('Contraseña incorrecta');
-            }
-        });
+        // Redirigir según el rol
+        if (usuario.rol_code === 1) {
+            return res.status(200).json({ message: "Inicio de sesión exitoso", rol_code: 1 }); // Administrador
+        } else if (usuario.rol_code === 2) {
+            return res.status(200).json({ message: "Inicio de sesión exitoso", rol_code: 2 }); // Usuario
+        } else {
+            return res.status(200).json({ message: "Inicio de sesión exitoso", rol_code: usuario.rol_code });
+        }
     });
 });
 
-app.listen(5001, () => {
-    console.log('Servidor en ejecución en http://localhost:5001');
+// Iniciar el servidor
+const PORT = 5001;
+app.listen(PORT, () => {
+    console.log(`Servidor en ejecución en http://localhost:${PORT}`);
 });
