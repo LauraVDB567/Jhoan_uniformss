@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import azul from '../Archivos/azul-removebg-preview.png';
 import saco_verde from '../Archivos/saco-removebg-preview.png';
 import saco_negro from '../Archivos/saco_negro-removebg-preview.png';
@@ -29,12 +30,8 @@ import corbata_roja from "../Archivos/corbata roja.png"
 import corbata_gris from "../Archivos/corbata gris.png"
 
 import "./syle/carritocompras.css";
-import { useNavigate } from 'react-router-dom';
 
-
-
-
-
+// Productos que serán mostrados en el carrito
 const productosData = [
   { nombre: 'Saco Verde', precio: 45000, imagen: saco_verde, categoria: 'saco' },
   { nombre: 'Saco Negro', precio: 45000, imagen: saco_negro, categoria: 'saco' },
@@ -83,6 +80,11 @@ const CarritoCompras = () => {
             setCarrito([...carrito, { ...producto, cantidad: 1 }]);
         }
     };
+    const cerrarSesion = () => {
+        localStorage.removeItem("userSession");
+        sessionStorage.clear();
+        navigate("/", { replace: true }); 
+      };
 
     const incrementarCantidad = (producto) => {
         setCarrito(carrito.map(item =>
@@ -111,14 +113,44 @@ const CarritoCompras = () => {
         navigate('/factura', { state: { carrito, total } });
     };
 
-    
-
     const productosFiltrados = productosData.filter(producto =>
         producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
     );
 
     return (
         <div>
+          
+            <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                <div className="container-fluid">
+                    <a className="navbar-brand" href="">Sistema De Informacion Jhoan Uniforms</a>
+                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <div className="collapse navbar-collapse" id="navbarNav">
+                        <ul className="navbar-nav ms-auto">
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/">Principal</Link>
+                            </li>
+                          
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/Terminosycondiciones">Términos y Condiciones</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/RecoverPassword">Recuperar</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/InicioYRegistro">Registrarse</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/solicitud">Devolución</Link>
+                            </li>
+                            <li className="nav-item"><button className="btn btn-danger" onClick={cerrarSesion}>Cerrar Sesión</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            {/* Carrito de compras */}
             <h1><b>Carrito De Compras</b></h1>
             <div>
                 <input
@@ -156,13 +188,9 @@ const CarritoCompras = () => {
                 </ul>
                 <p>Total: ${total.toFixed(2)}</p>
                 <button onClick={generarFactura}>Generar Factura</button>
-
-                
-
             </div>
         </div>
     );
 };
 
 export default CarritoCompras;
-
