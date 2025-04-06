@@ -1,30 +1,14 @@
-import { Navigate } from 'react-router-dom';
-import { InicioYRegistro, adminAccounts } from "./InicioYRegistro";
+import { Navigate } from "react-router-dom";
 
+const AdminRoute = ({ children }) => {
+  const rol_code = localStorage.getItem("rol_code");
+  const sesionActiva = localStorage.getItem("Sesion");
 
-const close = ({ children }) => {
-  const sesion = localStorage.getItem("Sesion")
-  const correo = localStorage.getItem("correos")
-  const esAdmin = adminAccounts.some(account => account.correo === correo);
+  return sesionActiva && Number(rol_code) === 1 ? children : <Navigate to="/" />;
+  
+};
 
-
-
-  if (sesion == false || !sesion) {
-    return <Navigate to="/" />
-
-  }
-
-  if (!esAdmin) {
-    return <Navigate to="/" />
-  }
-
-
-  return children;
-}
-
-export default close
-
-
+export default AdminRoute;
 
 
 
