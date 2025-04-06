@@ -8,7 +8,7 @@ const crypto = require("crypto");
 app.use(cors());
 app.use(express.json());
 
-// Configurar la conexión a MySQL
+
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -16,7 +16,7 @@ const db = mysql.createConnection({
     database: "datos"
 });
 
-// Conectar a la base de datos
+
  db.connect((err) => {
     if (err) {
         console.error("Error al conectar a la base de datos:", err);
@@ -139,3 +139,4 @@ const PORT = 5001;
 app.listen(PORT, () => {
     console.log(`Servidor en ejecución en http://localhost:${PORT}`);
 });
+
