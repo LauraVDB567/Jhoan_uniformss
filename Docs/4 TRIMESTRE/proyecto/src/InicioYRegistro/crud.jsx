@@ -7,10 +7,13 @@ function Crud() {
   const [facturas, setFacturas] = useState([]);
   const navigate = useNavigate();
 
+
   const cerrarsesion = () => {
     localStorage.clear();
+    sessionStorage.clear();
     navigate("/", {replace : true});
   };
+
 
   const getFacturas = async () => {
     try {
@@ -90,5 +93,6 @@ function Crud() {
 }
 
 export default Crud;
+
 
 
