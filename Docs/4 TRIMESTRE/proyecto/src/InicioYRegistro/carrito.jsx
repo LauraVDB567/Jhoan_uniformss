@@ -1,72 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import azul from '../Archivos/azul-removebg-preview.png';
-import saco_verde from '../Archivos/saco-removebg-preview.png';
-import saco_negro from '../Archivos/saco_negro-removebg-preview.png';
-import saco_gris from '../Archivos/saco gris.png';
-import jardinera_azul from '../Archivos/jardinera_azul-removebg-preview.png';
-import jardinera_gris from '../Archivos/jardinera gris.webp';
-import jadrinera_clara from '../Archivos/jardinera_clara-removebg-preview.png';
-import jardinera_oscura from '../Archivos/jardinera_de_rayas-removebg-preview.png';
-import pantalon_negro from '../Archivos/pantalon_negro-removebg-preview - copia.png';
-import pantalon_gris from '../Archivos/pantalon_gris-removebg-preview.png';
-import pantalon_azul from '../Archivos/pantalon_azul-removebg-preview.png';
-import pantalon_beigth from '../Archivos/beich-removebg-preview.png';
-import medias_blancas from '../Archivos/medias_blancas-removebg-preview.png';
-import medias_negras from '../Archivos/negra-removebg-preview.png';
-import medias_azules from '../Archivos/media_azul-removebg-preview.png';
-import medias_gris from '../Archivos/medias_gris-removebg-preview.png';
-import zapatos_colegio from '../Archivos/image-removebg-preview.png';
-import zapatos_2 from '../Archivos/zapatos.png';
-import zapatos_blancos from '../Archivos/zapatos blancos.png';
-import zapatos_deportivos from '../Archivos/tipo.png';
-import camisa_blanca1 from "../Archivos/camisa_larga-removebg-preview.png"
-import camisa_blanca2 from "../Archivos/camisa-removebg-preview.png"
-import camisa_blanca3 from "../Archivos/camisa2-removebg-preview.png"
-import camisa_blanca4 from "../Archivos/camisacorta-removebg-preview.png"
-import corbata_negra from "../Archivos/corbata negra.png"
-import corbata_azul from "../Archivos/corbata azul.png"
-import corbata_roja from "../Archivos/corbata roja.png"
-import corbata_gris from "../Archivos/corbata gris.png"
-
 import "./syle/carritocompras.css";
-
-// Productos que serán mostrados en el carrito
-const productosData = [
-  { nombre: 'Saco Verde', precio: 45000, imagen: saco_verde, categoria: 'saco' },
-  { nombre: 'Saco Negro', precio: 45000, imagen: saco_negro, categoria: 'saco' },
-  { nombre: 'Saco Azul', precio: 46000, imagen: azul, categoria: 'saco' },
-  { nombre: 'Saco Gris', precio: 43000, imagen: saco_gris, categoria: 'saco' },
-  { nombre: 'Jardinera Azul', precio: 42000, imagen: jardinera_azul, categoria: 'jardinera' },
-  { nombre: 'Jardinera Oscura', precio: 45500, imagen: jardinera_oscura, categoria: 'jardinera' },
-  { nombre: 'Jardinera Clara', precio: 44000, imagen: jadrinera_clara, categoria: 'jardinera' },
-  { nombre: 'Jardinera Gris', precio: 45000, imagen: jardinera_gris, categoria: 'jardinera' },
-  { nombre: 'Pantalon Negro', precio: 40800, imagen: pantalon_gris, categoria: 'pantalon' },
-  { nombre: 'Pantalon Gris', precio: 41000, imagen: pantalon_negro, categoria: 'pantalon' },
-  { nombre: 'Pantalon Azul', precio: 41000, imagen: pantalon_azul, categoria: 'pantalon' },
-  { nombre: 'Pantalon Beige', precio: 41000, imagen: pantalon_beigth, categoria: 'pantalon' },
-  { nombre: 'Medias Blancas', precio: 9000, imagen: medias_blancas, categoria: 'media' },
-  { nombre: 'Medias Negras', precio: 75000, imagen: medias_negras, categoria: 'media' },
-  { nombre: 'Medias Azules', precio: 85000, imagen: medias_azules, categoria: 'media' },
-  { nombre: 'Medias Grises', precio: 80000, imagen: medias_gris, categoria: 'media' },
-  { nombre: 'Zapatos De Diario', precio: 50000, imagen: zapatos_colegio, categoria: 'zapato' },
-  { nombre: 'Zapatos Estilo 2', precio: 51000, imagen: zapatos_2, categoria: 'zapato' },
-  { nombre: 'Zapatos Blancos', precio: 47800, imagen: zapatos_blancos, categoria: 'zapato' },
-  { nombre: 'Zapatos Deportivos', precio: 50000, imagen: zapatos_deportivos, categoria: 'zapato' },
-  { nombre: 'Camisa Manga Larga', precio: 48000, imagen: camisa_blanca1, categoria: 'camisa' },
-  { nombre: 'Camisa Blanca Normal', precio: 40000, imagen: camisa_blanca2, categoria: 'camisa' },
-  { nombre: 'Camisa Blanca ', precio: 42000, imagen: camisa_blanca3, categoria: 'camisa' },
-  { nombre: 'Camisa Manga Corta', precio: 43000, imagen: camisa_blanca4, categoria: 'camisa' },
-  { nombre: 'Corbata Negra', precio:22000, imagen:corbata_negra, categoria: 'corbatas' },
-  { nombre: 'Corbata Azul', precio:23000, imagen:corbata_azul, categoria: 'corbatas' },
-  { nombre: 'Corbata Roja', precio:25000, imagen:corbata_roja, categoria: 'corbatas' },
-  { nombre: 'Corbata Gris', precio:23000, imagen:corbata_gris, categoria: 'corbatas' }
-];
 
 const CarritoCompras = () => {
     const [carrito, setCarrito] = useState([]);
+    const [productosData, setProductosData] = useState([]);
     const [busqueda, setBusqueda] = useState("");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        fetch("http://localhost:5000/api/productos")
+            .then(res => res.json())
+            .then(data => {
+                const productosConInfo = data.map(p => {
+                    const nombreLimpio = p.nombre
+                        .replace(/^[\d-]+/, '')
+                        .replace(/\.(jpg|jpeg|png)$/i, '')
+                        .replace(/_/g, ' ')
+                        .trim();
+
+                    let precio = 0;
+                    let categoria = "";
+
+                    if (nombreLimpio.toLowerCase().includes("zapato")) {
+                        precio = 45000;
+                        categoria = "zapato";
+                    } else if (nombreLimpio.toLowerCase().includes("corbata")) {
+                        precio = 23000;
+                        categoria = "corbatas";
+                    } else {
+                        precio = 40000;
+                        categoria = "otros";
+                    }
+
+                    return {
+                        nombre: nombreLimpio,
+                        imagen: `http://localhost:5000/carrito/${p.imagen}`,
+                        precio,
+                        categoria
+                    };
+                });
+                setProductosData(productosConInfo);
+            })
+            .catch(err => console.error("Error cargando productos:", err));
+    }, []);
 
     const agregarAlCarrito = (producto) => {
         const existingProduct = carrito.find(item => item.nombre === producto.nombre);
@@ -80,11 +57,12 @@ const CarritoCompras = () => {
             setCarrito([...carrito, { ...producto, cantidad: 1 }]);
         }
     };
+
     const cerrarSesion = () => {
         localStorage.removeItem("userSession");
         sessionStorage.clear();
-        navigate("/", { replace: true }); 
-      };
+        navigate("/", { replace: true });
+    };
 
     const incrementarCantidad = (producto) => {
         setCarrito(carrito.map(item =>
@@ -110,6 +88,7 @@ const CarritoCompras = () => {
     const total = carrito.reduce((acc, producto) => acc + (producto.precio * producto.cantidad), 0);
 
     const generarFactura = () => {
+      
         navigate('/factura', { state: { carrito, total } });
     };
 
@@ -118,79 +97,85 @@ const CarritoCompras = () => {
     );
 
     return (
-        <div>
-          
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <>
+            <nav className="navbar navbar-expand-lg navbar-light bg-light registro-navbar">
                 <div className="container-fluid">
-                    <a className="navbar-brand" href="">Sistema De Informacion Jhoan Uniforms</a>
-                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span className="navbar-brand">
+                        Sistema De Información Jhoan Uniforms
+                    </span>
+                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                        aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav ms-auto">
                             <li className="nav-item">
-                                <Link className="nav-link" to="/">Principal</Link>
-                            </li>
-                          
-                            <li className="nav-item">
-                                <Link className="nav-link" to="/Terminosycondiciones">Términos y Condiciones</Link>
+                                <Link className="nav-link registro-nav-link" to="/">Principal</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/RecoverPassword">Recuperar</Link>
+                                <Link className="nav-link principal-nav-link" to="/carrito">Carrito de compras</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/InicioYRegistro">Registrarse</Link>
+                                <Link className="nav-link registro-nav-link" to="/Terminosycondiciones">Términos y Condiciones</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/solicitud">Devolución</Link>
+                                <Link className="nav-link registro-nav-link" to="/RecoverPassword">Recuperar</Link>
                             </li>
-                            <li className="nav-item"><button className="btn btn-danger" onClick={cerrarSesion}>Cerrar Sesión</button></li>
+                            <li className="nav-item">
+                                <Link className="nav-link registro-nav-link" to="/InicioYRegistro">Registrarse</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link registro-nav-link" to="/solicitud">Devolución</Link>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </nav>
 
-            {/* Carrito de compras */}
-            <h1><b>Carrito De Compras</b></h1>
-            <div>
-                <input
-                    type="text"
-                    placeholder="Buscar productos..."
-                    value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
-                />
-                <button className="button-lupa" onClick={() => setBusqueda("")}>🔍</button>
-            </div>
-            <div className="producto-container">
-                {productosFiltrados.map((producto, index) => (
-                    <div key={index} className="producto">
-                        <img src={producto.imagen} alt={producto.nombre} />
-                        <h2>{producto.nombre}</h2>
-                        <p>Precio: ${producto.precio}</p>
-                        <button onClick={() => agregarAlCarrito(producto)}>Agregar al carrito</button>
-                    </div>
-                ))}
-            </div>
+            <div className="carrito-container">
+                <h1><b>Carrito De Compras</b></h1>
+                <div>
+                    <input
+                        type="text"
+                        placeholder="Buscar productos..."
+                        value={busqueda}
+                        onChange={(e) => setBusqueda(e.target.value)}
+                    />
+                    <button className="button-lupa" onClick={() => setBusqueda("")}>🔍</button>
+                </div>
 
-            <div className="carrito">
-                <h2>Carrito de Compras</h2>
-                <ul>
-                    {carrito.map((producto, index) => (
-                        <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            {producto.nombre} - ${producto.precio} x {producto.cantidad}
-                            <div style={{ display: 'flex', gap: '5px' }}>
-                                <button style={{ fontSize: '12px' }} onClick={() => incrementarCantidad(producto)}>+</button>
-                                <button style={{ fontSize: '12px' }} onClick={() => decrementarCantidad(producto)}>-</button>
-                                <button style={{ fontSize: '12px' }} onClick={() => decrementarCantidad(producto)}>Eliminar</button>
-                            </div>
-                        </li>
+                <div className="producto-container">
+                    {productosFiltrados.map((producto, index) => (
+                        <div key={index} className="producto">
+                            <img src={producto.imagen} alt={producto.nombre} />
+                            <h2>{producto.nombre}</h2>
+                            <p>Precio: ${producto.precio}</p>
+                            <button onClick={() => agregarAlCarrito(producto)}>Agregar al carrito</button>
+                        </div>
                     ))}
-                </ul>
-                <p>Total: ${total.toFixed(2)}</p>
-                <button onClick={generarFactura}>Generar Factura</button>
+                </div>
+
+                <div className="carrito">
+                    <h2>Carrito de Compras</h2>
+                    <ul>
+                        {carrito.map((producto, index) => (
+                            <li key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                {producto.nombre} - ${producto.precio} x {producto.cantidad}
+                                <div style={{ display: 'flex', gap: '5px' }}>
+                                    <button style={{ fontSize: '12px' }} onClick={() => incrementarCantidad(producto)}>+</button>
+                                    <button style={{ fontSize: '12px' }} onClick={() => decrementarCantidad(producto)}>-</button>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                    <p>Total: ${total.toFixed(2)}</p>
+                    <button onClick={generarFactura}>Generar Factura</button>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 
 export default CarritoCompras;
+
