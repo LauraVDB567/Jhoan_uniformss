@@ -1,13 +1,11 @@
+-- Tabla de roles
 CREATE TABLE IF NOT EXISTS `roles` (
   `rol_code` INT(11) NOT NULL AUTO_INCREMENT,
   `rol_name` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`rol_code`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Tabla `usuarios`
--- -----------------------------------------------------
+-- Tabla de usuarios
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `rol_code` INT(11) NOT NULL,
@@ -16,13 +14,20 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `contraseña` VARCHAR(250) NOT NULL,
   `correo` VARCHAR(250) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `correo_UNIQUE` (`correo` ASC) VISIBLE
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+  UNIQUE KEY `correo_UNIQUE` (`correo`),
+  CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`rol_code`) REFERENCES `roles` (`rol_code`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Tabla `factura`
--- -----------------------------------------------------
+-- Tabla de administradores
+CREATE TABLE IF NOT EXISTS `administrador` (
+  `correo` VARCHAR(250) NOT NULL,
+  `contraseña` VARCHAR(250) NOT NULL,
+  `rol_code` INT(11) NOT NULL,
+  PRIMARY KEY (`correo`),
+  CONSTRAINT `fk_admin_rol` FOREIGN KEY (`rol_code`) REFERENCES `roles` (`rol_code`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabla de facturas
 CREATE TABLE IF NOT EXISTS `factura` (
   `numeroFactura` VARCHAR(45) NOT NULL,
   `nombre` VARCHAR(45) NOT NULL,
@@ -32,12 +37,9 @@ CREATE TABLE IF NOT EXISTS `factura` (
   `total` DOUBLE NOT NULL,
   `metodoPago` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`numeroFactura`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Tabla `devolucion`
--- -----------------------------------------------------
+-- Tabla de devoluciones
 CREATE TABLE IF NOT EXISTS `devolucion` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `correo` VARCHAR(250) NOT NULL,
@@ -48,27 +50,14 @@ CREATE TABLE IF NOT EXISTS `devolucion` (
   `total` DOUBLE NOT NULL,
   `metodoPago` VARCHAR(45) NOT NULL,
   `comentarios` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_devolucion_factura` FOREIGN KEY (`numeroFactura`) REFERENCES `factura` (`numeroFactura`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabla de productos en carrito
+CREATE TABLE IF NOT EXISTS `carrito` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tipo` VARCHAR(250) NOT NULL,
+  `nombre` VARCHAR(250) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
--- -----------------------------------------------------
--- Tabla `administrador`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `administrador` (
-  `correo` VARCHAR(250) NOT NULL,
-  `contraseña` VARCHAR(250) NOT NULL,
-  `rol_code` INT(11) NOT NULL,
-  PRIMARY KEY (`correo`)
-) ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4;
-
------------------------------------------------------------
-
-create table carrito (
-id int auto_increment not null,
-tipo varchar (250) not null,
-nombre varchar (250) not null,
-primary key (id)
-);
--------------------------------------------------------
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
