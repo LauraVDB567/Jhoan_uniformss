@@ -62,3 +62,13 @@ CREATE TABLE IF NOT EXISTS `administrador` (
   PRIMARY KEY (`correo`)
 ) ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
+
+-----------------------------------------------------------
+
+create table carrito (
+id int auto_increment not null,
+tipo varchar (250) not null,
+nombre varchar (250) not null,
+primary key (id)
+);
+-------------------------------------------------------
