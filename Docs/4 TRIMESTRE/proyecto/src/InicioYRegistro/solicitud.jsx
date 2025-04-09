@@ -13,14 +13,13 @@ const Solicitud = () => {
   const [comentarios, setComentarios] = useState('');
   const [mensaje, setMensaje] = useState('');
 
-
   const handleBuscarFactura = async () => {
     try {
       const response = await axios.get(`http://localhost:3007/api/factura/numeroFactura/${numeroFactura}`);
       if (response.data) {
         setFactura(response.data);
         setMensaje('Factura encontrada');
-        
+
         const productosData = response.data.productos;
         if (Array.isArray(productosData)) {
           setProductos(productosData);
@@ -41,7 +40,6 @@ const Solicitud = () => {
     }
   };
 
-
   const queryDevolucion = async () => {
     if (!numeroFactura || !factura) {
       alert("Debe buscar y seleccionar una factura válida antes de proceder.");
@@ -58,59 +56,41 @@ const Solicitud = () => {
       return;
     }
 
-    const confirmDevolucion = window.confirm("Espere su solicitud de devolución de su producto en el correo electrónico.");
-    if (confirmDevolucion) {
-      try {
-        const productosArray = [productoSeleccionado];
+    try {
+      const productosArray = [productoSeleccionado];
 
-  
-        if (!factura.correo) {
-          alert('Correo no disponible. No se puede procesar la devolución.');
-          return;
-        }
+      if (!factura.correo) {
+        alert('Correo no disponible. No se puede procesar la devolución.');
+        return;
+      }
 
+      // Solo se envía la solicitud de correo, no se genera la devolución inmediatamente
+      const correoResponse = await axios.post('http://localhost:3008/api/enviar-correo', {
+        correoUsuario: factura.correo,
+        nombreUsuario: factura.nombre,
+        numeroFactura: factura.numeroFactura,
+        enlaceDevolucion: `http://localhost:3000/devolucion?numeroFactura=${numeroFactura}`,
+      });
 
-        await axios.post('http://localhost:3002/api/devolucion', {
-          numeroFactura,
-          nombre: factura.nombre,
-          correoUsuario: factura.correo,
-          telefono: factura.telefono,
-          productos: productosArray,
-          total: factura.total,
-          metodoPago: factura.metodoPago,
-          comentarios: comentarios,
-          correo:factura.correo
-        });
-
-
-        const correoResponse = await axios.post('http://localhost:3008/api/enviar-correo', {
-          correoUsuario: factura.correo,
-          nombreUsuario: factura.nombre,
-          numeroFactura: factura.numeroFactura,
-          enlaceDevolucion: `http://localhost:3000/devolucion?numeroFactura=${numeroFactura}`,
-        });
-
-        if (correoResponse.status === 200) {
-          alert('Correo enviado al usuario con información de la devolución.');
-        } else {
-          alert(`Error al enviar el correo: ${correoResponse.data.message || 'Error desconocido.'}`);
-        }
-      } catch (error) {
-        console.error('Error al procesar la devolución:', error);
-        if (error.response) {
-          alert(`Error del servidor: ${error.response.data.message || 'Error desconocido.'}`);
-        } else if (error.request) {
-          alert('No se pudo contactar con el servidor.');
-        } else {
-          alert(`Error al realizar la solicitud: ${error.message}`);
-        }
+      if (correoResponse.status === 200) {
+        alert('Pronto sera notificado para su devolucion.');
+      } else {
+        alert(`Error al enviar el correo: ${correoResponse.data.message || 'Error desconocido.'}`);
+      }
+    } catch (error) {
+      console.error('Error al procesar la solicitud de devolución:', error);
+      if (error.response) {
+        alert(`Error del servidor: ${error.response.data.message || 'Error desconocido.'}`);
+      } else if (error.request) {
+        alert('No se pudo contactar con el servidor.');
+      } else {
+        alert(`Error al realizar la solicitud: ${error.message}`);
       }
     }
   };
 
   return (
     <>
-      {/* Navbar */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light principal-navbar">
         <div className="container-fluid">
           <a className="navbar-brand">
@@ -129,6 +109,9 @@ const Solicitud = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
+               <li className="nav-item">
+             <Link className="nav-link principal-nav-link" to="/carrito">Carrito de compras</Link>
+              </li>
               <li className="nav-item">
                 <Link className="nav-link principal-nav-link" to="/">Principal</Link>
               </li>
@@ -139,14 +122,13 @@ const Solicitud = () => {
                 <Link className="nav-link principal-nav-link" to="/InicioYRegistro">Registrarse</Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link principal-nav-link" to="/devolucion">Devolución</Link>
+                <Link className="nav-link principal-nav-link" to="/solicitud">Devolución</Link>
               </li>
             </ul>
           </div>
         </div>
       </nav>
 
-     
       <div className="devolucion-container">
         <h2>Solicitud de Devolución</h2>
         <input
@@ -181,13 +163,9 @@ const Solicitud = () => {
                 className="select-producto"
               >
                 <option value="">Seleccione un producto</option>
-                {productos && productos.length > 0 ? (
-                  productos.map((producto, index) => (
-                    <option key={index} value={producto}>{producto}</option>
-                  ))
-                ) : (
-                  <option>No hay productos disponibles para devolver</option>
-                )}
+                {productos.map((producto, index) => (
+                  <option key={index} value={producto}>{producto}</option>
+                ))}
               </select>
             </div>
 
@@ -198,11 +176,7 @@ const Solicitud = () => {
               className="textarea-comentarios"
             />
 
-            <button 
-              onClick={queryDevolucion} 
-              className="button-devolver" 
-              disabled={!factura || !productoSeleccionado || comentarios.trim() === ''}
-            >
+            <button onClick={queryDevolucion} className="button-devolver">
               Enviar Solicitud
             </button>
           </div>
@@ -213,4 +187,3 @@ const Solicitud = () => {
 };
 
 export default Solicitud;
-
