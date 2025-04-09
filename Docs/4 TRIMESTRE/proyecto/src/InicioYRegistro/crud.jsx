@@ -2,18 +2,18 @@ import "./syle/crudA.css";
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { FaBell } from "react-icons/fa";
 
 function Crud() {
   const [facturas, setFacturas] = useState([]);
+  const [notificaciones, setNotificaciones] = useState([]);
   const navigate = useNavigate();
-
 
   const cerrarsesion = () => {
     localStorage.clear();
     sessionStorage.clear();
-    navigate("/", {replace : true});
+    navigate("/", { replace: true });
   };
-
 
   const getFacturas = async () => {
     try {
@@ -24,10 +24,19 @@ function Crud() {
     }
   };
 
+  const getNotificaciones = async () => {
+    try {
+      const response = await Axios.get("http://localhost:3008/api/solicitudes-devolucion");
+      setNotificaciones(response.data);
+    } catch (error) {
+      console.error("Error obteniendo las notificaciones:", error);
+    }
+  };
+
   const eliminarFactura = async (numeroFactura) => {
     try {
       await Axios.delete(`http://localhost:3007/api/facturas/${numeroFactura}`);
-      setFacturas(prevFacturas => prevFacturas.filter(factura => factura.numeroFactura !== numeroFactura));
+      setFacturas(prev => prev.filter(factura => factura.numeroFactura !== numeroFactura));
     } catch (error) {
       console.error("Error eliminando la factura:", error);
     }
@@ -36,21 +45,34 @@ function Crud() {
   const modificarFactura = (numeroFactura) => {
     if (numeroFactura) {
       navigate(`/modificar-factura/${numeroFactura}`);
-    } else {
-      console.error("Número de factura indefinido");
     }
   };
 
   useEffect(() => {
     getFacturas();
+    getNotificaciones();
   }, []);
 
   return (
     <div className="crud-container">
       <header className="crud-header">
-        <h1 className="crud-title"><b>CRUD USUARIOS</b></h1>
-        <button className="crud-logout-button" onClick={cerrarsesion}>Cerrar Sesión</button>
+        <h1 className="crud-title"><b>FACTURA DE USUARIOS</b></h1>
+        <div className="crud-header-buttons">
+         
+
+          {/* Campanita que redirige a notificaciones */}
+          <div className="notification-icon" onClick={() => navigate("/notificaciones")}>
+            <FaBell size={20} />
+            {notificaciones.length > 0 && (
+              <span className="notification-badge">{notificaciones.length}</span>
+            )}
+          </div>
+
+          <button className="crud-logout-button" onClick={cerrarsesion}>Cerrar Sesión</button>
+        </div>
       </header>
+
+      {/* Tabla de facturas */}
       <table className="crud-table">
         <thead className="crud-thead">
           <tr>
@@ -72,7 +94,13 @@ function Crud() {
                 <td className="crud-td">{factura.nombre || 'N/A'}</td>
                 <td className="crud-td">{factura.telefono || 'N/A'}</td>
                 <td className="crud-td">{factura.correo || 'N/A'}</td>
-                <td className="crud-td">{factura.productos ? (Array.isArray(factura.productos) ? factura.productos.map(prod => prod.nombre).join(', ') : factura.productos) : 'N/A'}</td>
+                <td className="crud-td">
+                  {factura.productos
+                    ? Array.isArray(factura.productos)
+                      ? factura.productos.map(prod => prod.nombre).join(', ')
+                      : factura.productos
+                    : 'N/A'}
+                </td>
                 <td className="crud-td">${factura.total ? factura.total.toFixed(2) : '0.00'}</td>
                 <td className="crud-td">{factura.metodoPago || 'N/A'}</td>
                 <td className="crud-td">
@@ -93,6 +121,3 @@ function Crud() {
 }
 
 export default Crud;
-
-
-
