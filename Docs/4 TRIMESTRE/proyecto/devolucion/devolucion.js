@@ -12,7 +12,7 @@ const db = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "basedatos"
+  database: "datos"
 });
 
 db.connect((err) => {
@@ -38,7 +38,7 @@ const transporter = nodemailer.createTransport({
 app.get('/api/factura/numeroFactura/:numeroFactura', (req, res) => {
   const { numeroFactura } = req.params;
 
-  const query = 'SELECT * FROM facturas WHERE numeroFactura = ?';
+  const query = 'SELECT * FROM factura WHERE numeroFactura = ?';
   db.query(query, [numeroFactura], (err, results) => {
     if (err) {
       console.error('Error al buscar la actura:', err);
@@ -78,6 +78,18 @@ app.post('/api/devolucion', (req, res) => {
         console.error('Error al registrar la devolución:', err);
         return res.status(500).json({ message: 'Error al registrar la devolución', error: err });
       }
+
+
+app.get('/api/devolucion', (req, res) => {
+  const query = 'SELECT * FROM devoluciones'; // asegúrate que esta tabla exista
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error al obtener las devoluciones:', err);
+      return res.status(500).json({ error: 'Error al obtener las devoluciones' });
+    }
+    res.json(results);
+  });
+});
 
   
       const mailOptions = {
