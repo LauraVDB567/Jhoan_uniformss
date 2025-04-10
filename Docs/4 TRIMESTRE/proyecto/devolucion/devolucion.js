@@ -81,7 +81,7 @@ app.post('/api/devolucion', (req, res) => {
 
 
 app.get('/api/devolucion', (req, res) => {
-  const query = 'SELECT * FROM devoluciones'; // asegúrate que esta tabla exista
+  const query = 'SELECT * FROM devolucion'; 
   db.query(query, (err, results) => {
     if (err) {
       console.error('Error al obtener las devoluciones:', err);
