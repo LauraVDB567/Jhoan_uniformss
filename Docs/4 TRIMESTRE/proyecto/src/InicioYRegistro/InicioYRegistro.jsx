@@ -1,8 +1,9 @@
-import './syle/recuperar2.css';
+ import './syle/recuperar2.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import Emailvalidation from '@everapi/emailvalidation-js'
 
 const InicioYRegistro = () => {
     const navigate = useNavigate();
@@ -12,22 +13,44 @@ const InicioYRegistro = () => {
     const [correo, setCorreo] = useState('');
     const [contraseña, setContraseña] = useState('');
     const [error, setError] = useState('');
+    const [verification, setVerification] = useState(false);
 
     const handleSubmit = async () => {
         if (action === "Registro") {
             if (apodo && apellido && correo && contraseña) {
                 try {
-                    const nuevoUsuario = { apodo, apellido, correo, contraseña, rol_code: 2 };
-                    await axios.post('http://localhost:5001/api/registro', nuevoUsuario);
-                    setAction("Inicio Sesión");
-                    setError('');
-                    resetFields();
+
+
+                    const client = new Emailvalidation('ema_live_swH2myP5ad2FsEIGPJueQ38zoBK9zTi3s1fBDHVQ')
+                    const response = await client.info(correo, { catch_all: 0 });  
+                    
+                    console.log(response)
+
+                  if (response.smtp_check === false ){
+                    alert("Ingrese un correo valido ")
+                    return setVerification(response.smtp_check)
+                    console.log(response.smtp_check, "********", response );
+                  }
+                
+
+                    if (response.smtp_check === true) {
+                    
+                        alert("Usuario se registro exitosamente")
+
+                        const nuevoUsuario = { apodo, apellido, correo, contraseña };
+                        await axios.post("http://localhost:5001/api/registro", nuevoUsuario);
+                        setAction("Inicio Sesión");
+                        setError('');
+                        resetFields();
+                    }
+                    else {
+                        alert("Ingrese un correo valido :( ")
+                    }
                 } catch (error) {
-                    setError('Error al registrar el usuario');
-                    console.error('Error en el registro:', error);
+                    const mensajeError = error.response?.data?.error || 'Error al registrar el usuario';
+                    setError(mensajeError);
+                    console.error('Error en el registro:', mensajeError);
                 }
-            } else {
-                setError('Por favor, completa todos los campos.');
             }
         } else {
             if (correo && contraseña) {
@@ -58,6 +81,49 @@ const InicioYRegistro = () => {
         }
     };
 
+    const ConsultarUsuario = async (id) => {
+        try {
+            const respuesta = await fetch(`http://localhost:5001/consultar/${id}`);
+            const datos = await respuesta.json();
+            if (respuesta.ok) {
+                console.log("Usuario encontrado", datos);
+            } else {
+                console.log("Usuario no encontrado");
+            }
+        } catch (err) {
+            console.log("Usuario no encontrado");
+        }
+    };
+
+    const ActualizarUsuario = async (id, usuarios) => {
+        try {
+            const respuesta = await fetch(`http://localhost:5001/consultar/${id}`);
+            const datos = await respuesta.json();
+            if (respuesta.ok) {
+                console.log("Usuario encontrado", datos);
+            } else {
+                console.log("Usuario no encontrado");
+            }
+        } catch (error) {
+            console.error("Error en la consulta:", error);
+        }
+    };
+
+    const eliminarUsuario = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:5001/eliminar/${id}`, {
+                method: "DELETE",
+            });
+            if (response.ok) {
+                console.log("Usuario eliminado");
+            } else {
+                console.log("Usuario no eliminado");
+            }
+        } catch (err) {
+            console.log("Usuario no eliminado");
+        }
+    };
+
     const resetFields = () => {
         setApodo('');
         setApellido('');
@@ -73,46 +139,40 @@ const InicioYRegistro = () => {
 
     return (
         <>
-        <nav className="navbar navbar-expand-lg navbar-light bg-light registro-navbar">
-            <div className="container-fluid">
-                <a className="navbar-brand">
-                    <p>Sistema De Informacion Jhoan Uniforms</p>
-                </a>
-                <button
-                    className="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-controls="navbarNav"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation"
-                >
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav ms-auto">
-                        <li className="nav-item">
-                            <Link className="nav-link registro-nav-link" to="/">Principal</Link>
-                        </li>
-                         <li className="nav-item">
-                         <Link className="nav-link principal-nav-link" to="/carrito">Carrito de compras</Link>
-                                </li>
-                        <li className="nav-item">
-                            <Link className="nav-link registro-nav-link" to="/Terminosycondiciones">Términos y Condiciones</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link registro-nav-link" to="/RecoverPassword">recuperar</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link registro-nav-link" to="/InicioYRegistro">Registrarse</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link registro-nav-link" to="/solicitud">Devolución</Link>
-                        </li>
-                    </ul>
+            <nav className="navbar navbar-expand-lg navbar-light bg-light registro-navbar">
+                <div className="container-fluid">
+                    <a className="navbar-brand">
+                        <p>Sistema De Informacion Jhoan Uniforms</p>
+                    </a>
+                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <div className="collapse navbar-collapse" id="navbarNav">
+                        <ul className="navbar-nav ms-auto">
+                            <li className="nav-item">
+                                <Link className="nav-link registro-nav-link" to="/">Principal</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link principal-nav-link" to="/carrito">Carrito de compras</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link registro-nav-link" to="/Terminosycondiciones">Términos y Condiciones</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link registro-nav-link" to="/RecoverPassword">recuperar</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link registro-nav-link" to="/InicioYRegistro">Registrarse</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link registro-nav-link" to="/solicitud">Devolución</Link>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
 
             <div className="registro-body-inicioyregistro">
                 <div className="container">
@@ -126,29 +186,29 @@ const InicioYRegistro = () => {
                             <div className='registro-input'>
                                 <input type="name" placeholder="nombre" value={apodo} onChange={(e) => setApodo(e.target.value)} />
                             </div>
-                            <br></br>
+                            <br />
                             <div className='registro-input'>
                                 <input type="name" placeholder="apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} />
                             </div>
-                            <br></br>
+                            <br />
                         </>
                     )}
 
                     <div className='registro-input'>
                         <input type="email" placeholder="correo" value={correo} onChange={(e) => setCorreo(e.target.value)} />
                     </div>
-                    <br></br>
+                    <br />
                     <div className='registro-input'>
                         <input type="password" placeholder="contraseña" value={contraseña} onChange={(e) => setContraseña(e.target.value)} />
                     </div>
+                    <br />
 
-<br></br>
                     {action === "Inicio Sesión" ? null : (
                         <div className='registro-forgot-password'>
                             <span><a href="#" onClick={switchToLogin}>¿Tienes cuenta? Iniciar sesión</a></span>
                         </div>
                     )}
-                      <br></br>
+                    <br />
 
                     {error && <div className='registro-error-message'>{error}</div>}
 
@@ -166,8 +226,3 @@ const InicioYRegistro = () => {
 };
 
 export default InicioYRegistro;
-
-
-
-
-
