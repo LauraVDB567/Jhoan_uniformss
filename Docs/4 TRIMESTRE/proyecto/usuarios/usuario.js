@@ -4,7 +4,7 @@ const mysql = require("mysql");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-
+const axios = require("axios");
 app.use(cors());
 app.use(express.json());
 
@@ -12,7 +12,7 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "",
+    password: "12345",
     database: "datos"
 });
 
@@ -31,12 +31,15 @@ const hashSHA256 = (password) => {
 };
 
 // Registro de usuarios (rol_code = 2 por defecto para usuarios normales)
+
 app.post("/api/registro", async (req, res) => {
     const { apodo, apellido, correo, contraseña } = req.body;
 
     try {
-        const hashedPassword = await bcrypt.hash(contraseña, 10);
 
+        // Si el correo es válido, continúa con el registro
+        const hashedPassword = await bcrypt.hash(contraseña, 10);
+        
         db.query(
             "INSERT INTO usuarios (rol_code, apodo, apellido, correo, contraseña) VALUES (2, ?, ?, ?, ?)",
             [apodo, apellido, correo, hashedPassword],
