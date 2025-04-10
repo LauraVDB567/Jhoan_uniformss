@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Axios from "axios";
 
-const Solicitud = () => {
+const Notificacion = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [detallesMap, setDetallesMap] = useState({});
 
@@ -96,4 +96,4 @@ const Solicitud = () => {
   );
 };
 
-export default Solicitud;
+export default  Notificacion;
