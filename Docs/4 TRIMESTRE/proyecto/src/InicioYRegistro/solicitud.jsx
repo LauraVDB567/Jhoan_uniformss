@@ -10,7 +10,7 @@ const Solicitud = () => {
   const [factura, setFactura] = useState(null);
   const [productos, setProductos] = useState([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState('');
-  const [comentarios, setComentarios] = useState('');
+  const [comentario, setComentarios] = useState('');
   const [mensaje, setMensaje] = useState('');
 
   const handleBuscarFactura = async () => {
@@ -51,29 +51,33 @@ const Solicitud = () => {
       return;
     }
 
-    if (!comentarios || comentarios.trim() === '') {
+    if (!comentario || comentario.trim() === '') {
       alert("Por favor, ingrese un comentario para la devolución.");
       return;
     }
 
     try {
-      const productosArray = [productoSeleccionado];
+      const productosArray = productoSeleccionado === 'todos' ? productos : [productoSeleccionado];
 
       if (!factura.correo) {
         alert('Correo no disponible. No se puede procesar la devolución.');
         return;
       }
 
-      // Solo se envía la solicitud de correo, no se genera la devolución inmediatamente
       const correoResponse = await axios.post('http://localhost:3008/api/enviar-correo', {
         correoUsuario: factura.correo,
         nombreUsuario: factura.nombre,
         numeroFactura: factura.numeroFactura,
+        telefonoUsuario:factura.telefono,
+        productoUsuario:productos,
+        comentarioUsuario:comentario,
+        metodoPagoUsuario:factura.metodoPago,
+        totalUsuario:factura.total,
         enlaceDevolucion: `http://localhost:3000/devolucion?numeroFactura=${numeroFactura}`,
       });
 
       if (correoResponse.status === 200) {
-        alert('Pronto sera notificado para su devolucion.');
+        alert('Pronto será notificado para su devolución.');
       } else {
         alert(`Error al enviar el correo: ${correoResponse.data.message || 'Error desconocido.'}`);
       }
@@ -109,8 +113,8 @@ const Solicitud = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-               <li className="nav-item">
-             <Link className="nav-link principal-nav-link" to="/carrito">Carrito de compras</Link>
+              <li className="nav-item">
+                <Link className="nav-link principal-nav-link" to="/carrito">Carrito de compras</Link>
               </li>
               <li className="nav-item">
                 <Link className="nav-link principal-nav-link" to="/">Principal</Link>
@@ -163,6 +167,7 @@ const Solicitud = () => {
                 className="select-producto"
               >
                 <option value="">Seleccione un producto</option>
+                <option value="todos">Todos los productos</option>
                 {productos.map((producto, index) => (
                   <option key={index} value={producto}>{producto}</option>
                 ))}
@@ -171,7 +176,7 @@ const Solicitud = () => {
 
             <textarea
               placeholder="Comentarios sobre la devolución"
-              value={comentarios}
+              value={comentario}
               onChange={(e) => setComentarios(e.target.value)}
               className="textarea-comentarios"
             />
