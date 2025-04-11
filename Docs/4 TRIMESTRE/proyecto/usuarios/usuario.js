@@ -140,20 +140,32 @@ app.post("/api/login", (req, res) => {
 });
 
 
-app.put ("/actualizar/:id", (req,res)=>{
-const {apodo,apellido,correo,contraseña}=req.body
-const {id}=req.params
-db.query ("UPDATE usuarios SET apodo=?, apellido=?, correo=?, contraseña =?  WHERE id=?",
-    [apodo,apellido,correo,contraseña,id],
-    (err,result)=>{
-        if (err){
-            console.log (err)
-            res.status(500).send("Usuario no actualizado")
+app.put("/actualizar/:id", async (req, res) => {
+    const { apodo, apellido, correo, contraseña } = req.body;
+    const { id } = req.params;
+
+    try {
+        let hashedPassword = contraseña;
+        if (!contraseña.startsWith('$2b$')) {
+            hashedPassword = await bcrypt.hash(contraseña, 10);
         }
-        res.send (result)
-        console.log ("Usuario actualizado")
+
+        db.query(
+            "UPDATE usuarios SET apodo=?, apellido=?, correo=?, contraseña=? WHERE id=?",
+            [apodo, apellido, correo, hashedPassword, id],
+            (err, result) => {
+                if (err) {
+                    console.log(err);
+                    return res.status(500).send("Usuario no actualizado");
+                }
+                res.send(result);
+                console.log("Usuario actualizado");
+            }
+        );
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Error al actualizar el usuario");
     }
-)
 });
 
 app.delete ("/eliminar/:id", (req,res)=>{
