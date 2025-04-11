@@ -11,7 +11,7 @@ import daviplata from "../Archivos/daviplata.png";
 import paypal from "../Archivos/paypal.png";
 import jhoanLogo from "../Archivos/Jhoan_Uniforms-removebg-preview.png"; 
 
-const Factura = () => {
+const Comprobante = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { carrito = [], total = 0 } = location.state || { productos: [] };
@@ -61,60 +61,37 @@ const Factura = () => {
     return codigo;
   };
 
+  const ActualizarFactura =async(numeroFactura,factura)=>{
+
+    try{
+       const response = await fetch (http://localhost:3007/api/facturas/${numeroFactura},
+           {
+               method :"PUT",
+               headers:{
+                   "Content-Type":"application/json"
+               },
+               body:JSON.stringify (factura)
+         
+           });
+           if (response.ok){
+               console.log ("Factura actualizada")
+           }
+           else{
+               console.log ("Factura no actualizada")
+           }}
+   
+           catch (err){
+           console.log ("Factura no actualizada")
+           }}
+   
   const handlePrint = async () => {
-    
     const correoEnviar = correoUsuario || "correo@default.com"; 
-
     console.log("Correo a enviar:", correoEnviar);
-    const doc = new jsPDF();
-    const fecha = new Date().toLocaleDateString();
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
-
-    const imgData = await fetch(jhoanLogo).then(res => res.blob()).then(blob => URL.createObjectURL(blob));
-    doc.addImage(imgData, 'JPEG', 15, 10, 30, 30);
-    doc.setFontSize(14);
-    doc.text("Jhoan Uniforms", 60, 25);
-    doc.setFontSize(10);
-    doc.text("Dirección de la tienda, Localidad de Kennedy", 60, 30);
-    doc.text("Teléfono: 3106072362", 60, 35);
-    doc.text("Email: devoluciones37@gmail.com", 60, 40);
-    
-    doc.setFontSize(12);
-    doc.text(`Fecha: ${fecha}`, 20, 60);
-    doc.text(`Número de Factura: ${numeroFactura}`, 20, 70);
-    doc.text(`Nombre: ${nombre}`, 20, 80);
-    doc.text(`Teléfono: ${telefono}`, 20, 90);
-    doc.text(`Correo: ${correoEnviar}`, 20, 100); 
-
-    doc.setFont("helvetica", "bold");
-    doc.text("Productos", 20, 110);
-    doc.setFont("helvetica", "normal");
-
-    doc.autoTable({
-      startY: 120,
-      head: [['Código', 'Producto', 'Cantidad', 'Precio', 'Subtotal']],
-      body: productosConCodigo.map((producto) => [
-        producto.codigo,
-        producto.nombre,
-        producto.cantidad,
-        `$${producto.precio.toFixed(2)}`,
-        `$${(producto.precio * producto.cantidad).toFixed(2)}`
-      ]),
-      theme: 'grid',
-      headStyles: { fillColor: [30, 30, 30], textColor: [255, 255, 255] },
-      margin: { top: 10, left: 20, right: 20 },
-      styles: { fontSize: 10, cellPadding: 5 },
-    });
-
-    doc.setFont("helvetica", "bold");
-    doc.text(`Total a Pagar: $${total.toFixed(2)}`, 20, doc.lastAutoTable.finalY + 10);
-    doc.text(`Método de Pago: ${metodoPago}`, 20, doc.lastAutoTable.finalY + 20);
-
-    doc.save("factura.pdf");
-
-    const productosParaGuardar = productosConCodigo.map(producto => `${producto.nombre} (Código: ${producto.codigo})`).join(', ');
-
+  
+    const productosParaGuardar = productosConCodigo.map(producto => 
+      ${producto.nombre} (Código: ${producto.codigo})
+    ).join(', ');
+  
     try {
       const response = await axios.post('http://localhost:3007/api/factura', {
         nombre,
@@ -125,14 +102,63 @@ const Factura = () => {
         total,
         metodoPago
       });
+  
+      alert('Comprobante guardado exitosamente');
+  
+
+      const doc = new jsPDF();
+      const fecha = new Date().toLocaleDateString();
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+  
+      const imgData = await fetch(jhoanLogo).then(res => res.blob()).then(blob => URL.createObjectURL(blob));
+      doc.addImage(imgData, 'JPEG', 15, 10, 30, 30);
+      doc.setFontSize(14);
+      doc.text("Jhoan Uniforms", 60, 25);
+      doc.setFontSize(10);
+      doc.text("Dirección de la tienda, Localidad de Kennedy", 60, 30);
+      doc.text("Teléfono: 3106072362", 60, 35);
+      doc.text("Email: devoluciones37@gmail.com", 60, 40);
       
-      alert('Factura guardada exitosamente');
+      doc.setFontSize(12);
+      doc.text(Fecha: ${fecha}, 20, 60);
+      doc.text(Comprobante de pago: ${numeroFactura}, 20, 70);
+      doc.text(Nombre: ${nombre}, 20, 80);
+      doc.text(Teléfono: ${telefono}, 20, 90);
+      doc.text(Correo: ${correoEnviar}, 20, 100); 
+  
+      doc.setFont("helvetica", "bold");
+      doc.text("Productos", 20, 110);
+      doc.setFont("helvetica", "normal");
+  
+      doc.autoTable({
+        startY: 120,
+        head: [['Código', 'Producto', 'Cantidad', 'Precio', 'Subtotal']],
+        body: productosConCodigo.map((producto) => [
+          producto.codigo,
+          producto.nombre,
+          producto.cantidad,
+          $${producto.precio.toFixed(2)},
+          $${(producto.precio * producto.cantidad).toFixed(2)}
+        ]),
+        theme: 'grid',
+        headStyles: { fillColor: [30, 30, 30], textColor: [255, 255, 255] },
+        margin: { top: 10, left: 20, right: 20 },
+        styles: { fontSize: 10, cellPadding: 5 },
+      });
+  
+      doc.setFont("helvetica", "bold");
+      doc.text(Total a Pagar: $${total.toFixed(2)}, 20, doc.lastAutoTable.finalY + 10);
+      doc.text(Método de Pago: ${metodoPago}, 20, doc.lastAutoTable.finalY + 20);
+  
+      doc.save("comprobante.pdf");
+  
     } catch (error) {
-      console.error('Error al guardar la factura:', error);
-      alert('Error al guardar la factura');
+      console.error('Error al guardar el comprobante', error);
+      alert('Registrarse primero, para acceder al registro de su compra');
     }
   };
-
+  
   const handleReturn = () => {
     navigate('/devolucion', { state: { numeroFactura, carrito } });
   };
@@ -168,7 +194,7 @@ const Factura = () => {
             />
             <input
               type="name"
-              placeholder="Número de Factura"
+              placeholder="Número de comprobante"
               value={numeroFactura}
               readOnly
             />
@@ -238,7 +264,7 @@ const Factura = () => {
               onClick={handlePrint} 
               disabled={!nombre || !telefono || !correoUsuario || !numeroFactura || productosConCodigo.length === 0}
             >
-              Imprimir Factura
+              Imprimir Comprobante de Compra
             </button>
           </div>
         </form>
@@ -247,4 +273,4 @@ const Factura = () => {
   );
 };
 
-export default Factura;
+export default Comprobante;
