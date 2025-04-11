@@ -1,4 +1,4 @@
- import './syle/recuperar2.css';
+import './syle/recuperar2.css';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -97,7 +97,7 @@ const InicioYRegistro = () => {
 
     const ActualizarUsuario = async (id, usuarios) => {
         try {
-            const respuesta = await fetch(`http://localhost:5001/consultar/${id}`);
+            const respuesta = await fetch(`http://localhost:5001/actualizar/${id}`);
             const datos = await respuesta.json();
             if (respuesta.ok) {
                 console.log("Usuario encontrado", datos);
