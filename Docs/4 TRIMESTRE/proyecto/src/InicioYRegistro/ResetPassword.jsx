@@ -1,104 +1,104 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
-import './syle/recover.css';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import "./syle/recuperar.css"
 
-function RecoverPassword() {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
 
+const ResetPassword = () => { 
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token'); 
+
+  useEffect(() => {
+    console.log('Token obtenido del URL:', token); // Para depuración
+    if (!token) {
+      setErrorMessage('El token de recuperación es inválido.');
+    }
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email) {
-      setMessage('Por favor, introduce un correo electrónico.');
+    if (newPassword !== confirmPassword) {
+      setErrorMessage('Las contraseñas no coinciden');
       return;
     }
 
-    setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/recover-password', { email });
-      setMessage(response.data.message);
-      setIsError(false);
+      const response = await fetch('http://localhost:5000/ResetPassword', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: token,       
+          newPassword: newPassword, 
+        }),
+      });
+
+      const data = await response.json();
+
+      console.log('Respuesta del backend:', data); 
+
+      if (response.ok) {
+        setSuccessMessage(data.message);
+        setTimeout(() => {
+          navigate('/InicioYRegistro'); 
+        }, 2000);
+      } else {
+        setErrorMessage(data.message);
+      }
     } catch (error) {
-      setMessage('Error al enviar el correo. Intenta de nuevo.');
-      setIsError(true); 
-    }}
-    
+      console.error('Error en la solicitud:', error);
+      setErrorMessage('Hubo un problema al intentar cambiar la contraseña.');
+    }
+  };
 
   return (
-    <div className="recover-password-body">
-      <nav className="navbar navbar-expand-lg navbar-light bg-light principal-navbar-asww fixed-top">
-        <div className="container-fluid">
-          <a className="navbar-brand">
-            <p>Sistema De Información Jhoan Uniforms</p>
-          </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul className="navbar-nav">
-               <li className="nav-item">
-                           <Link className="nav-link principal-nav-link" to="/carrito">Carrito de compras</Link>
-                            </li>
-                            <li className="nav-item">
-                              <Link className="nav-link principal-nav-link" to="/">Principal</Link>
-                            </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/Terminosycondiciones">Términos y Condiciones</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/InicioYRegistro">Registrarse</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/devolucion">Devolución</Link>
-              </li>
-            </ul>
-          </div>
+    <div className='body-recuperar1'>
+      <div className='cuadro'>
+        <div className="container">
+          <h2>Restablecer Contraseña</h2>
+          
+          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+          {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+          
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="newPassword">Nueva Contraseña</label>
+              <input
+                className='put1'
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="confirmPassword">Confirmar Contraseña</label>
+              <input
+                className='put1'
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+            
+            <button className='boton1' type="submit">Restablecer Contraseña</button>
+          </form>
         </div>
-      </nav>
-
-      <div className="recover-password-container">
-        <div className="recover-header">
-          <h1 className="recover-text">Recuperación de Contraseña</h1>
-          <div className="recover-underline"></div>
-        </div>
-        <form onSubmit={handleSubmit} className="recover-inputs">
-          <div className="recover-input">
-            <input
-              type="email"
-              placeholder="Introduce tu email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="recover-submit-container">
-            <button type="submit" className="recover-submit" disabled={loading}>
-              {loading ? 'Enviando...' : 'Recuperar Contraseña'}
-            </button>
-          </div>
-        </form>
-        {message && (
-  <p className={registro-error-message ${isError ? 'error' : 'success'}}>
-    {message}
-  </p>
-)}
-
       </div>
     </div>
   );
-}
+};
 
-export default RecoverPassword;
+export default ResetPassword;
