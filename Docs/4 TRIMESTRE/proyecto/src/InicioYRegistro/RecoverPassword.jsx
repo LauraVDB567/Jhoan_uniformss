@@ -7,6 +7,8 @@ function RecoverPassword() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,17 +22,16 @@ function RecoverPassword() {
     try {
       const response = await axios.post('http://localhost:5000/recover-password', { email });
       setMessage(response.data.message);
+      setIsError(false);
     } catch (error) {
       setMessage('Error al enviar el correo. Intenta de nuevo.');
-    } finally {
-      setLoading(false);
-    }
-  };
+      setIsError(true); 
+    }}
+    
 
   return (
     <div className="recover-password-body">
-    
-      <nav className="navbar navbar-expand-lg navbar-light bg-light principal-navbar-asww">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light principal-navbar-asww fixed-top">
         <div className="container-fluid">
           <a className="navbar-brand">
             <p>Sistema De Información Jhoan Uniforms</p>
@@ -46,8 +47,14 @@ function RecoverPassword() {
           >
             <span className="navbar-toggler-icon"></span>
           </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ms-auto">
+          <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul className="navbar-nav">
+               <li className="nav-item">
+                           <Link className="nav-link principal-nav-link" to="/carrito">Carrito de compras</Link>
+                            </li>
+                            <li className="nav-item">
+                              <Link className="nav-link principal-nav-link" to="/">Principal</Link>
+                            </li>
               <li className="nav-item">
                 <Link className="nav-link" to="/Terminosycondiciones">Términos y Condiciones</Link>
               </li>
@@ -62,7 +69,6 @@ function RecoverPassword() {
         </div>
       </nav>
 
- 
       <div className="recover-password-container">
         <div className="recover-header">
           <h1 className="recover-text">Recuperación de Contraseña</h1>
@@ -84,7 +90,12 @@ function RecoverPassword() {
             </button>
           </div>
         </form>
-        {message && <p className="registro-error-message">{message}</p>}
+        {message && (
+  <p className={`registro-error-message ${isError ? 'error' : 'success'}`}>
+    {message}
+  </p>
+)}
+
       </div>
     </div>
   );
