@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS `roles` (
   PRIMARY KEY (`rol_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Tabla de usuarios
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `rol_code` INT(11) NOT NULL,
@@ -13,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `apellido` VARCHAR(45) NOT NULL,
   `contraseña` VARCHAR(250) NOT NULL,
   `correo` VARCHAR(250) NOT NULL,
+  `estado` ENUM('activo', 'inactivo') NOT NULL DEFAULT 'activo',
   PRIMARY KEY (`id`),
   UNIQUE KEY `correo_UNIQUE` (`correo`),
   CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`rol_code`) REFERENCES `roles` (`rol_code`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS `factura` (
   `productos` VARCHAR(255) NOT NULL,
   `total` DOUBLE NOT NULL,
   `metodoPago` VARCHAR(45) NOT NULL,
+  `token_devolucion` VARCHAR(250) NOT NULL,
+  fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`numeroFactura`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -61,15 +63,3 @@ CREATE TABLE IF NOT EXISTS `carrito` (
   `nombre` VARCHAR(250) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE solicitudes(
-  id INT AUTO_INCREMENT PRIMARY KEY, 
-  numeroFactura VARCHAR(50) NOT NULL, 
-  nombreUsuario VARCHAR(100), 
-  correoUsuario VARCHAR(100), 
-  telefonoUsuario VARCHAR(20), 
-  productosSeleccionados TEXT, 
-  comentario TEXT, -- 
-  total DECIMAL(10, 2), 
-  fechaSolicitud TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
