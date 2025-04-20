@@ -178,4 +178,3 @@ const CarritoCompras = () => {
 };
 
 export default CarritoCompras;
-
