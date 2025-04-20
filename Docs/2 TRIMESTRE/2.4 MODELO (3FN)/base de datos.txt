@@ -1,0 +1,79 @@
+INSERT INTO roles (rol_code, rol_name) VALUES
+(1, 'Administrador'),
+(2, 'Usuario');
+
+----------------------------------------
+
+INSERT INTO administrador (correo, contraseña, rol_code) VALUES
+('dkim44243@gmail.com', SHA2('twicebestgg', 256), 1),
+('valentinadb13l@gmail.com', SHA2('12345', 256), 1),
+('valentinavaquezrodriguez00@gmail.com', SHA2('54321', 256), 1),
+('vallejolorena37@gmail.com', SHA2('678910', 256), 1);
+
+------------------------------------------------------
+
+-- Tabla de roles
+CREATE TABLE IF NOT EXISTS `roles` (
+  `rol_code` INT(11) NOT NULL AUTO_INCREMENT,
+  `rol_name` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`rol_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `usuarios` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `rol_code` INT(11) NOT NULL,
+  `apodo` VARCHAR(45) NOT NULL,
+  `apellido` VARCHAR(45) NOT NULL,
+  `contraseña` VARCHAR(250) NOT NULL,
+  `correo` VARCHAR(250) NOT NULL,
+  `estado` ENUM('activo', 'inactivo') NOT NULL DEFAULT 'activo',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `correo_UNIQUE` (`correo`),
+  CONSTRAINT `fk_usuario_rol` FOREIGN KEY (`rol_code`) REFERENCES `roles` (`rol_code`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabla de administradores
+CREATE TABLE IF NOT EXISTS `administrador` (
+  `correo` VARCHAR(250) NOT NULL,
+  `contraseña` VARCHAR(250) NOT NULL,
+  `rol_code` INT(11) NOT NULL,
+  PRIMARY KEY (`correo`),
+  CONSTRAINT `fk_admin_rol` FOREIGN KEY (`rol_code`) REFERENCES `roles` (`rol_code`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabla de facturas
+CREATE TABLE IF NOT EXISTS `factura` (
+  `numeroFactura` VARCHAR(45) NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  `correo` VARCHAR(250) NOT NULL,
+  `telefono` VARCHAR(45) NOT NULL,
+  `productos` VARCHAR(255) NOT NULL,
+  `total` DOUBLE NOT NULL,
+  `metodoPago` VARCHAR(45) NOT NULL,
+  `token_devolucion` VARCHAR(250) NOT NULL,
+  fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`numeroFactura`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabla de devoluciones
+CREATE TABLE IF NOT EXISTS `devolucion` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `correo` VARCHAR(250) NOT NULL,
+  `numeroFactura` VARCHAR(45) NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  `telefono` VARCHAR(45) NOT NULL,
+  `productos` VARCHAR(255) NOT NULL,
+  `total` DOUBLE NOT NULL,
+  `metodoPago` VARCHAR(45) NOT NULL,
+  `comentarios` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_devolucion_factura` FOREIGN KEY (`numeroFactura`) REFERENCES `factura` (`numeroFactura`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tabla de productos en carrito
+CREATE TABLE IF NOT EXISTS `productos` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tipo` VARCHAR(250) NOT NULL,
+  `productos` VARCHAR(250) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
