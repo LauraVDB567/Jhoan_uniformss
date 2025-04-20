@@ -1,26 +1,54 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import "./syle/devolucion.css";
 
 const Solicitud = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [numeroFactura, setNumeroFactura] = useState('');
   const [factura, setFactura] = useState(null);
   const [productos, setProductos] = useState([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState('');
   const [comentario, setComentarios] = useState('');
   const [mensaje, setMensaje] = useState('');
+  const [total, setTotal] = useState(0); // Nuevo estado para almacenar el total
 
-  const handleBuscarFactura = async () => {
+  const queryParams = new URLSearchParams(location.search);
+  const numeroFacturaParam = queryParams.get('numeroFactura');
+
+  useEffect(() => {
+    const verificarAprobacion = async () => {
+      if (numeroFacturaParam) {
+        try {
+          const response = await axios.get(`http://localhost:5013/api/devolucion/estado/${numeroFacturaParam}`);
+          if (response.data.aprobada) {
+            setNumeroFactura(numeroFacturaParam);
+            handleBuscarFactura(numeroFacturaParam);
+          } else {
+            alert("La devolución aún no ha sido aprobada por el administrador.");
+            navigate('/');
+          }
+        } catch (error) {
+          console.error("Error al verificar el estado de la devolución:", error);
+          alert("No se pudo verificar la devolución.");
+          navigate('/');
+        }
+      }
+    };
+    verificarAprobacion();
+  }, [numeroFacturaParam]);
+
+  const handleBuscarFactura = async (num = numeroFactura) => {
     try {
-      const response = await axios.get(`http://localhost:3007/api/factura/numeroFactura/${numeroFactura}`);
+      const response = await axios.get(`http://localhost:5013/api/factura/numeroFactura/${num}`);
       if (response.data) {
         setFactura(response.data);
-        setMensaje('Factura encontrada');
+        setMensaje('Comprobante encontrado');
 
         const productosData = response.data.productos;
+        setTotal(response.data.total); 
         if (Array.isArray(productosData)) {
           setProductos(productosData);
         } else if (typeof productosData === 'string') {
@@ -64,15 +92,16 @@ const Solicitud = () => {
         return;
       }
 
-      const correoResponse = await axios.post('http://localhost:3008/api/enviar-correo', {
+      const correoResponse = await axios.post('http://localhost:5013/api/enviar-correo', {
         correoUsuario: factura.correo,
         nombreUsuario: factura.nombre,
         numeroFactura: factura.numeroFactura,
-        telefonoUsuario:factura.telefono,
-        productoUsuario:productos,
-        comentarioUsuario:comentario,
-        metodoPagoUsuario:factura.metodoPago,
-        totalUsuario:factura.total,
+        telefonoUsuario: factura.telefono,
+        productoUsuario: productosArray,
+        comentarioUsuario: comentario,
+        metodoPagoUsuario: factura.metodoPago,
+        fechaUsuario:factura.fecha,
+        totalUsuario: total, 
         enlaceDevolucion: `http://localhost:3000/devolucion?numeroFactura=${numeroFactura}`,
       });
 
@@ -100,34 +129,13 @@ const Solicitud = () => {
           <a className="navbar-brand">
             <p>Sistema De Información Jhoan Uniforms</p>
           </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <Link className="nav-link principal-nav-link" to="/carrito">Carrito de compras</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link principal-nav-link" to="/">Principal</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link principal-nav-link" to="/Terminosycondiciones">Términos y Condiciones</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link principal-nav-link" to="/InicioYRegistro">Registrarse</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link principal-nav-link" to="/solicitud">Devolución</Link>
-              </li>
+              <li className="nav-item"><Link className="nav-link principal-nav-link" to="/carrito">Carrito</Link></li>
+              <li className="nav-item"><Link className="nav-link principal-nav-link" to="/">Principal</Link></li>
+              <li className="nav-item"><Link className="nav-link principal-nav-link" to="/Terminosycondiciones">Términos</Link></li>
+              <li className="nav-item"><Link className="nav-link principal-nav-link" to="/InicioYRegistro">Registro</Link></li>
+              <li className="nav-item"><Link className="nav-link principal-nav-link" to="/solicitud">Devolución</Link></li>
             </ul>
           </div>
         </div>
@@ -135,27 +143,29 @@ const Solicitud = () => {
 
       <div className="devolucion-container">
         <h2>Solicitud de Devolución</h2>
-        <input
-          type="text"
-          placeholder="Ingrese el número de la factura"
-          value={numeroFactura}
-          onChange={(e) => setNumeroFactura(e.target.value)}
-          className="input-factura"
-        />
-        <button onClick={handleBuscarFactura} className="button-buscar">
-          Buscar Factura
-        </button>
+        {!numeroFacturaParam && (
+          <>
+            <input
+              type="text"
+              placeholder="Ingrese el número de la factura"
+              value={numeroFactura}
+              onChange={(e) => setNumeroFactura(e.target.value)}
+              className="input-factura"
+            />
+            <button onClick={() => handleBuscarFactura()} className="button-buscar">Buscar Comprobante</button>
+          </>
+        )}
 
         {mensaje && <p className="mensaje">{mensaje}</p>}
 
         {factura && (
-          <div className="devolucion-container">
+          <div>
             <h3>Detalles de la solicitud:</h3>
-            <p><strong>Factura:</strong> {factura.numeroFactura}</p>
+            <p><strong>Numero Comprobante:</strong> {factura.numeroFactura}</p>
             <p><strong>Nombre:</strong> {factura.nombre}</p>
             <p><strong>Correo:</strong> {factura.correo}</p>
             <p><strong>Teléfono:</strong> {factura.telefono}</p>
-            <p><strong>Total:</strong> ${factura.total.toFixed(2)}</p>
+            <p><strong>Total:</strong> ${total.toFixed(2)}</p> 
             <p><strong>Método de Pago:</strong> {factura.metodoPago}</p>
 
             <div>
@@ -181,9 +191,7 @@ const Solicitud = () => {
               className="textarea-comentarios"
             />
 
-            <button onClick={queryDevolucion} className="button-devolver">
-              Enviar Solicitud
-            </button>
+            <button onClick={queryDevolucion} className="button-devolver">Enviar Solicitud</button>
           </div>
         )}
       </div>
