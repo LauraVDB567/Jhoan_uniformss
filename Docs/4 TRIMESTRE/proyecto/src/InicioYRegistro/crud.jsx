@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { FaBell } from "react-icons/fa";
 
 function Crud() {
-  const [facturas, setFacturas] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [notificaciones, setNotificaciones] = useState([]);
   const navigate = useNavigate();
 
@@ -15,103 +15,103 @@ function Crud() {
     navigate("/", { replace: true });
   };
 
-  const getFacturas = async () => {
+  const getUsuarios = async () => {
     try {
-      const response = await Axios.get("http://localhost:3007/api/facturas");
-      setFacturas(response.data);
+      const response = await Axios.get("http://localhost:5013/api/usuarios");
+      setUsuarios(response.data);
     } catch (error) {
-      console.error("Error obteniendo las facturas:", error);
+      console.error("Error obteniendo los usuarios:", error);
     }
   };
 
   const getNotificaciones = async () => {
     try {
-      const response = await Axios.get("http://localhost:3008/api/solicitudes-devolucion");
+      const response = await Axios.get("http://localhost:5013/api/solicitudes-devolucion");
       setNotificaciones(response.data);
     } catch (error) {
       console.error("Error obteniendo las notificaciones:", error);
     }
   };
 
-  const eliminarFactura = async (numeroFactura) => {
+  const eliminarUsuario = async (id) => {
     try {
-      await Axios.delete(`http://localhost:3007/api/facturas/${numeroFactura}`);
-      setFacturas(prev => prev.filter(factura => factura.numeroFactura !== numeroFactura));
+      await Axios.delete(`http://localhost:5013/eliminar/${id}`);
+      setUsuarios(prev => prev.filter(usuario => usuario.id !== id));
     } catch (error) {
-      console.error("Error eliminando la factura:", error);
+      console.error("Error eliminando el usuario:", error);
     }
   };
 
-  const modificarFactura = (numeroFactura) => {
-    if (numeroFactura) {
-      navigate(`/modificar-factura/${numeroFactura}`);
+  const modificarUsuario = (id) => {
+    if (id) {
+      navigate(`/modificar-usuario/${id}`);
+    }
+  };
+
+  const cambiarEstado = async (id, estadoActual) => {
+    try {
+      const nuevoEstado = estadoActual === 'activo' ? 'inactivo' : 'activo';
+      await Axios.put(`http://localhost:5013/api/usuarios/${id}`, { estado: nuevoEstado });
+      setUsuarios(prev => prev.map(usuario => usuario.id === id ? { ...usuario, estado: nuevoEstado } : usuario));
+    } catch (error) {
+      console.error("Error cambiando el estado del usuario:", error);
     }
   };
 
   useEffect(() => {
-    getFacturas();
+    getUsuarios();
     getNotificaciones();
   }, []);
 
   return (
     <div className="crud-container">
       <header className="crud-header">
-        <h1 className="crud-title"><b>FACTURA DE USUARIOS</b></h1>
+        <h1 className="crud-title"><b>GESTIONAR USUARIOS</b></h1>
         <div className="crud-header-buttons">
-         
-
-          {/* Campanita que redirige a notificaciones */}
           <div className="notification-icon" onClick={() => navigate("/notificaciones")}>
             <FaBell size={20} />
             {notificaciones.length > 0 && (
               <span className="notification-badge">{notificaciones.length}</span>
             )}
           </div>
-
           <button className="crud-logout-button" onClick={cerrarsesion}>Cerrar Sesión</button>
         </div>
       </header>
 
-      {/* Tabla de facturas */}
       <table className="crud-table">
         <thead className="crud-thead">
           <tr>
-            <th className="crud-th">Número de Factura</th>
+            <th className="crud-th">ID</th>
             <th className="crud-th">Nombre</th>
-            <th className="crud-th">Teléfono</th>
+            <th className="crud-th">Apellido</th>
             <th className="crud-th">Correo</th>
-            <th className="crud-th">Productos</th>
-            <th className="crud-th">Total</th>
-            <th className="crud-th">Método de Pago</th>
+            <th className="crud-th">Estado</th>
             <th className="crud-th">Acciones</th>
           </tr>
         </thead>
         <tbody className="crud-tbody">
-          {facturas.length > 0 ? (
-            facturas.map((factura) => (
-              <tr key={factura.numeroFactura} className="crud-tr">
-                <td className="crud-td">{factura.numeroFactura || 'N/A'}</td>
-                <td className="crud-td">{factura.nombre || 'N/A'}</td>
-                <td className="crud-td">{factura.telefono || 'N/A'}</td>
-                <td className="crud-td">{factura.correo || 'N/A'}</td>
+          {usuarios.length > 0 ? (
+            usuarios.map((usuario) => (
+              <tr key={usuario.id} className="crud-tr">
+                <td className="crud-td">{usuario.id}</td>
+                <td className="crud-td">{usuario.apodo}</td>
+                <td className="crud-td">{usuario.apellido}</td>
+                <td className="crud-td">{usuario.correo}</td>
                 <td className="crud-td">
-                  {factura.productos
-                    ? Array.isArray(factura.productos)
-                      ? factura.productos.map(prod => prod.nombre).join(', ')
-                      : factura.productos
-                    : 'N/A'}
+                  <span className={`estado ${usuario.estado}`}>{usuario.estado}</span>
+                  <button className="crud-button" onClick={() => cambiarEstado(usuario.id, usuario.estado)}>
+                    Cambiar Estado
+                  </button>
                 </td>
-                <td className="crud-td">${factura.total ? factura.total.toFixed(2) : '0.00'}</td>
-                <td className="crud-td">{factura.metodoPago || 'N/A'}</td>
                 <td className="crud-td">
-                  <button className="crud-button edit" onClick={() => modificarFactura(factura.numeroFactura)}>Modificar</button>
-                  <button className="crud-button delete" onClick={() => eliminarFactura(factura.numeroFactura)}>Eliminar</button>
+                  <button className="crud-button edit" onClick={() => modificarUsuario(usuario.id)}>Modificar</button>
+                  <button className="crud-button delete" onClick={() => eliminarUsuario(usuario.id)}>Eliminar</button>
                 </td>
               </tr>
             ))
           ) : (
             <tr className="crud-tr">
-              <td className="crud-td" colSpan="8">No hay facturas registradas</td>
+              <td className="crud-td" colSpan="6">No hay usuarios registrados</td>
             </tr>
           )}
         </tbody>

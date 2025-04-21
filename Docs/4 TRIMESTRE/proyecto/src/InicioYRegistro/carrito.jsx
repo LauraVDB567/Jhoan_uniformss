@@ -6,10 +6,17 @@ const CarritoCompras = () => {
     const [carrito, setCarrito] = useState([]);
     const [productosData, setProductosData] = useState([]);
     const [busqueda, setBusqueda] = useState("");
+    const [mensajeError, setMensajeError] = useState("");
     const navigate = useNavigate();
 
+    const cerrarSesion = () => {
+        localStorage.removeItem("userSession");
+        sessionStorage.clear();
+        navigate("/", { replace: true });
+    };
+
     useEffect(() => {
-        fetch("http://localhost:5000/api/productos")
+        fetch("http://localhost:5013/api/productos")
             .then(res => res.json())
             .then(data => {
                 const productosConInfo = data.map(p => {
@@ -35,7 +42,7 @@ const CarritoCompras = () => {
 
                     return {
                         nombre: nombreLimpio,
-                        imagen: `http://localhost:5000/carrito/${p.imagen}`,
+                        imagen: `http://localhost:5013/carrito/${p.imagen}`,
                         precio,
                         categoria
                     };
@@ -56,12 +63,6 @@ const CarritoCompras = () => {
         } else {
             setCarrito([...carrito, { ...producto, cantidad: 1 }]);
         }
-    };
-
-    const cerrarSesion = () => {
-        localStorage.removeItem("userSession");
-        sessionStorage.clear();
-        navigate("/", { replace: true });
     };
 
     const incrementarCantidad = (producto) => {
@@ -88,7 +89,13 @@ const CarritoCompras = () => {
     const total = carrito.reduce((acc, producto) => acc + (producto.precio * producto.cantidad), 0);
 
     const generarFactura = () => {
-      
+        if (carrito.length === 0) {
+            alert("Debes seleccionar al menos un producto antes de generar un comprobante.");
+            return;
+        
+        }
+
+        setMensajeError("");
         navigate('/factura', { state: { carrito, total } });
     };
 
@@ -98,6 +105,22 @@ const CarritoCompras = () => {
 
     return (
         <>
+            {/* ALERTA DE ERROR AL INICIO */}
+            {mensajeError && (
+                <div style={{
+                    backgroundColor: '#f8d7da',
+                    color: '#721c24',
+                    padding: '10px',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    border: '1px solid #f5c6cb',
+                    borderRadius: '4px',
+                    marginBottom: '10px'
+                }}>
+                    {mensajeError}
+                </div>
+            )}
+
             <nav className="navbar navbar-expand-lg navbar-light bg-light registro-navbar">
                 <div className="container-fluid">
                     <span className="navbar-brand">
@@ -128,6 +151,7 @@ const CarritoCompras = () => {
                             <li className="nav-item">
                                 <Link className="nav-link registro-nav-link" to="/solicitud">Devolución</Link>
                             </li>
+                            <button type='submit' onClick={cerrarSesion}>Cerrar sesión</button>
                         </ul>
                     </div>
                 </div>
@@ -170,7 +194,7 @@ const CarritoCompras = () => {
                         ))}
                     </ul>
                     <p>Total: ${total.toFixed(2)}</p>
-                    <button onClick={generarFactura}>Generar Factura</button>
+                    <button onClick={generarFactura}>Generar Comprobante</button>
                 </div>
             </div>
         </>
@@ -178,4 +202,3 @@ const CarritoCompras = () => {
 };
 
 export default CarritoCompras;
-

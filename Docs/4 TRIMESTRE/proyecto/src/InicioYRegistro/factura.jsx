@@ -61,39 +61,35 @@ const Comprobante = () => {
     return codigo;
   };
 
-  const ActualizarFactura =async(numeroFactura,factura)=>{
+  const ActualizarFactura = async (numeroFactura, factura) => {
+    try {
+      const response = await fetch(`http://localhost:5013/api/facturas/${numeroFactura}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(factura)
+      });
+      if (response.ok) {
+        console.log("Factura actualizada");
+      } else {
+        console.log("Factura no actualizada");
+      }
+    } catch (err) {
+      console.log("Factura no actualizada");
+    }
+  };
 
-    try{
-       const response = await fetch (http://localhost:3007/api/facturas/${numeroFactura},
-           {
-               method :"PUT",
-               headers:{
-                   "Content-Type":"application/json"
-               },
-               body:JSON.stringify (factura)
-         
-           });
-           if (response.ok){
-               console.log ("Factura actualizada")
-           }
-           else{
-               console.log ("Factura no actualizada")
-           }}
-   
-           catch (err){
-           console.log ("Factura no actualizada")
-           }}
-   
   const handlePrint = async () => {
     const correoEnviar = correoUsuario || "correo@default.com"; 
     console.log("Correo a enviar:", correoEnviar);
-  
+
     const productosParaGuardar = productosConCodigo.map(producto => 
-      ${producto.nombre} (Código: ${producto.codigo})
+      `${producto.nombre} (Código: ${producto.codigo})`
     ).join(', ');
-  
+
     try {
-      const response = await axios.post('http://localhost:3007/api/factura', {
+      const response = await axios.post('http://localhost:5013/api/factura', {
         nombre,
         telefono,
         correo: correoEnviar, 
@@ -102,15 +98,14 @@ const Comprobante = () => {
         total,
         metodoPago
       });
-  
+
       alert('Comprobante guardado exitosamente');
-  
 
       const doc = new jsPDF();
       const fecha = new Date().toLocaleDateString();
       doc.setFontSize(12);
       doc.setFont("helvetica", "normal");
-  
+
       const imgData = await fetch(jhoanLogo).then(res => res.blob()).then(blob => URL.createObjectURL(blob));
       doc.addImage(imgData, 'JPEG', 15, 10, 30, 30);
       doc.setFontSize(14);
@@ -119,18 +114,18 @@ const Comprobante = () => {
       doc.text("Dirección de la tienda, Localidad de Kennedy", 60, 30);
       doc.text("Teléfono: 3106072362", 60, 35);
       doc.text("Email: devoluciones37@gmail.com", 60, 40);
-      
+
       doc.setFontSize(12);
-      doc.text(Fecha: ${fecha}, 20, 60);
-      doc.text(Comprobante de pago: ${numeroFactura}, 20, 70);
-      doc.text(Nombre: ${nombre}, 20, 80);
-      doc.text(Teléfono: ${telefono}, 20, 90);
-      doc.text(Correo: ${correoEnviar}, 20, 100); 
-  
+      doc.text(`Fecha: ${fecha}`, 20, 60);
+      doc.text(`Comprobante de pago: ${numeroFactura}`, 20, 70);
+      doc.text(`Nombre: ${nombre}`, 20, 80);
+      doc.text(`Teléfono: ${telefono}`, 20, 90);
+      doc.text(`Correo: ${correoEnviar}`, 20, 100); 
+
       doc.setFont("helvetica", "bold");
       doc.text("Productos", 20, 110);
       doc.setFont("helvetica", "normal");
-  
+
       doc.autoTable({
         startY: 120,
         head: [['Código', 'Producto', 'Cantidad', 'Precio', 'Subtotal']],
@@ -138,27 +133,27 @@ const Comprobante = () => {
           producto.codigo,
           producto.nombre,
           producto.cantidad,
-          $${producto.precio.toFixed(2)},
-          $${(producto.precio * producto.cantidad).toFixed(2)}
+          `$${producto.precio.toFixed(2)}`,
+          `$${(producto.precio * producto.cantidad).toFixed(2)}`
         ]),
         theme: 'grid',
         headStyles: { fillColor: [30, 30, 30], textColor: [255, 255, 255] },
         margin: { top: 10, left: 20, right: 20 },
         styles: { fontSize: 10, cellPadding: 5 },
       });
-  
+
       doc.setFont("helvetica", "bold");
-      doc.text(Total a Pagar: $${total.toFixed(2)}, 20, doc.lastAutoTable.finalY + 10);
-      doc.text(Método de Pago: ${metodoPago}, 20, doc.lastAutoTable.finalY + 20);
-  
+      doc.text(`Total a Pagar: $${total.toFixed(2)}`, 20, doc.lastAutoTable.finalY + 10);
+      doc.text(`Método de Pago: ${metodoPago}`, 20, doc.lastAutoTable.finalY + 20);
+
       doc.save("comprobante.pdf");
-  
+
     } catch (error) {
       console.error('Error al guardar el comprobante', error);
       alert('Registrarse primero, para acceder al registro de su compra');
     }
   };
-  
+
   const handleReturn = () => {
     navigate('/devolucion', { state: { numeroFactura, carrito } });
   };

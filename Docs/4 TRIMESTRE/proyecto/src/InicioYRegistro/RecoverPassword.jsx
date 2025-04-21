@@ -20,7 +20,7 @@ function RecoverPassword() {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/recover-password', { email });
+      const response = await axios.post('http://localhost:5013/recover-password', { email });
       setMessage(response.data.message);
       setIsError(false);
     } catch (error) {
@@ -61,9 +61,7 @@ function RecoverPassword() {
               <li className="nav-item">
                 <Link className="nav-link" to="/InicioYRegistro">Registrarse</Link>
               </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/devolucion">Devolución</Link>
-              </li>
+              
             </ul>
           </div>
         </div>

@@ -38,7 +38,7 @@ const InicioYRegistro = () => {
                         alert("Usuario se registro exitosamente")
 
                         const nuevoUsuario = { apodo, apellido, correo, contraseña };
-                        await axios.post("http://localhost:5001/api/registro", nuevoUsuario);
+                        await axios.post("http://localhost:5013/api/registro", nuevoUsuario);
                         setAction("Inicio Sesión");
                         setError('');
                         resetFields();
@@ -55,7 +55,7 @@ const InicioYRegistro = () => {
         } else {
             if (correo && contraseña) {
                 try {
-                    const response = await axios.post('http://localhost:5001/api/login', { correo: correo.trim(), contraseña: contraseña.trim() });
+                    const response = await axios.post('http://localhost:5013/api/login', { correo: correo.trim(), contraseña: contraseña.trim() });
                     if (response.status === 200) {
                         const { rol_code } = response.data;
                         localStorage.setItem("Sesion", true);
@@ -83,7 +83,7 @@ const InicioYRegistro = () => {
 
     const ConsultarUsuario = async (id) => {
         try {
-            const respuesta = await fetch(`http://localhost:5001/consultar/${id}`);
+            const respuesta = await fetch(`http://localhost:5013/consultar/${id}`);
             const datos = await respuesta.json();
             if (respuesta.ok) {
                 console.log("Usuario encontrado", datos);
@@ -97,7 +97,7 @@ const InicioYRegistro = () => {
 
     const ActualizarUsuario = async (id, usuarios) => {
         try {
-            const respuesta = await fetch(`http://localhost:5001/actualizar/${id}`);
+            const respuesta = await fetch(`http://localhost:5013/actualizar/${id}`);
             const datos = await respuesta.json();
             if (respuesta.ok) {
                 console.log("Usuario encontrado", datos);
@@ -111,7 +111,7 @@ const InicioYRegistro = () => {
 
     const eliminarUsuario = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5001/eliminar/${id}`, {
+            const response = await fetch(`http://localhost:5013/eliminar/${id}`, {
                 method: "DELETE",
             });
             if (response.ok) {
@@ -166,9 +166,7 @@ const InicioYRegistro = () => {
                             <li className="nav-item">
                                 <Link className="nav-link registro-nav-link" to="/InicioYRegistro">Registrarse</Link>
                             </li>
-                            <li className="nav-item">
-                                <Link className="nav-link registro-nav-link" to="/solicitud">Devolución</Link>
-                            </li>
+                           
                         </ul>
                     </div>
                 </div>
