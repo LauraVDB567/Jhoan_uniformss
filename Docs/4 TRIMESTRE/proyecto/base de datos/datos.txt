@@ -1,3 +1,16 @@
+INSERT INTO roles (rol_code, rol_name) VALUES
+(1, 'Administrador'),
+(2, 'Usuario');
+
+----------------------------------------
+
+INSERT INTO administrador (correo, contraseña, rol_code) VALUES
+('dkim44243@gmail.com', SHA2('twicebestgg', 256), 1),
+('valentinadb13l@gmail.com', SHA2('12345', 256), 1),
+('valentinavaquezrodriguez00@gmail.com', SHA2('54321', 256), 1),
+('vallejolorena37@gmail.com', SHA2('678910', 256), 1);
+
+------------------------------------------------------
 
 -- Tabla de roles
 CREATE TABLE IF NOT EXISTS `roles` (
