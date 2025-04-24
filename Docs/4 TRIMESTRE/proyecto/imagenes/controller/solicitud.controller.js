@@ -1,9 +1,10 @@
-const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const db = require('../conexion');
 require('dotenv').config();
+const nodemailer = require('nodemailer');
 
-const solicitudes = [];
+
+
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -19,6 +20,7 @@ transporter.verify((error, success) => {
   else console.log('Nodemailer funcionando correctamente.');
 });
 
+
 exports.enviarSolicitud = async (req, res) => {
   const {
     correoUsuario, nombreUsuario, numeroFactura, enlaceDevolucion,
@@ -26,11 +28,13 @@ exports.enviarSolicitud = async (req, res) => {
     metodoPagoUsuario, totalUsuario, fechaUsuario
   } = req.body;
 
+
   if (!correoUsuario || !nombreUsuario || !numeroFactura || !telefonoUsuario ||
       !productoUsuario || !comentarioUsuario || !metodoPagoUsuario ||
       !totalUsuario || !fechaUsuario || !enlaceDevolucion) {
     return res.status(400).json({ message: 'Faltan datos para procesar la solicitud.' });
   }
+
 
   const nuevaSolicitud = {
     _id: crypto.randomUUID(),
@@ -55,12 +59,14 @@ exports.enviarSolicitud = async (req, res) => {
   }
 };
 
+
 exports.obtenerSolicitudes = (req, res) => {
   const resumen = solicitudes.map(({ _id, usuario, correo, numeroFactura, producto, telefono, metodoPago, total, comentario, fecha }) => ({
     _id, usuario, correo, numeroFactura, producto, telefono, metodoPago, total, comentario, fecha
   }));
   res.status(200).json(resumen);
 };
+
 
 exports.obtenerDetalleSolicitud = (req, res) => {
   const { id } = req.params;
@@ -83,6 +89,7 @@ exports.obtenerDetalleSolicitud = (req, res) => {
   }
 };
 
+
 exports.aceptarSolicitud = async (req, res) => {
   const { id } = req.params;
   const index = solicitudes.findIndex(s => s._id === id);
@@ -91,6 +98,7 @@ exports.aceptarSolicitud = async (req, res) => {
   const solicitud = solicitudes[index];
   const token = crypto.randomBytes(16).toString('hex');
 
+ 
   const updateTokenQuery = 'UPDATE factura SET token_devolucion = ? WHERE numeroFactura = ?';
   db.query(updateTokenQuery, [token, solicitud.numeroFactura], (err) => {
     if (err) {
@@ -98,6 +106,7 @@ exports.aceptarSolicitud = async (req, res) => {
       return res.status(500).json({ message: 'Error al asignar el token de devolución.' });
     }
 
+  
     const queryDevolucion = `
       INSERT INTO devolucion (numeroFactura, nombre, telefono, productos, total, metodoPago, comentarios, correo)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -120,6 +129,7 @@ exports.aceptarSolicitud = async (req, res) => {
           return res.status(500).json({ message: 'Error al registrar la devolución en la base de datos.' });
         }
 
+  
         const mailOptions = {
           from: 'jhoanUniforms@gmail.com',
           to: solicitud.correo,
@@ -141,8 +151,12 @@ El equipo de Jhoan Uniforms.
         };
 
         try {
+   
           await transporter.sendMail(mailOptions);
+          
+
           solicitudes.splice(index, 1);
+
           res.status(200).json({ message: 'Solicitud aceptada, correo enviado y devolución registrada con éxito.' });
         } catch (error) {
           console.error('Error al enviar correo:', error);
@@ -159,6 +173,8 @@ exports.rechazarSolicitud = async (req, res) => {
   if (index === -1) return res.status(404).json({ message: 'Solicitud no encontrada.' });
 
   const solicitud = solicitudes[index];
+  
+
   const mailOptions = {
     from: 'jhoanUniforms@gmail.com',
     to: solicitud.correo,
@@ -179,10 +195,25 @@ El equipo de Jhoan Uniforms.
 
   try {
     await transporter.sendMail(mailOptions);
+    
+  
     solicitudes.splice(index, 1);
+
     res.status(200).json({ message: 'Solicitud rechazada y correo enviado.' });
   } catch (error) {
     console.error('Error al enviar correo:', error);
     res.status(500).json({ message: 'Error al enviar correo de rechazo.' });
   }
 };
+
+exports.obtenerDevoluciones = (req, res) => {
+  const query = "SELECT * FROM devolucion";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Error al obtener las devoluciones:", err);
+      return res.status(500).json({ error: "Error al obtener las devoluciones" });
+    }
+    res.json(results);
+  });
+};
+
