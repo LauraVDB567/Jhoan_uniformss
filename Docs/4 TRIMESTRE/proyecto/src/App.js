@@ -10,8 +10,10 @@ import Devolucion from "./InicioYRegistro/devolucion.jsx";
 import Factura from './InicioYRegistro/factura.jsx'; 
 import VerMas from './InicioYRegistro/vermas.jsx';
 import Solicitud from './InicioYRegistro/solicitud.jsx';
-import ModificarFactura from "./InicioYRegistro/ModificarFactura";
+import ModificarUsuario from "./InicioYRegistro/ModificarFactura";
 import Privacidad from "./InicioYRegistro/privacidad.js"
+import Notificacion from "./InicioYRegistro/notificaciones.jsx"
+import DevolucionesGrafica from "./InicioYRegistro/devolucionesGrafica.jsx";
 
 
 function App() {
@@ -23,21 +25,16 @@ function App() {
           <Route path="/InicioYRegistro" element={<InicioYRegistro />} />
           <Route path="/Terminosycondiciones" element={<Terminosycondiciones />} />
           <Route path="/carrito" element={<Carrito />} />
-          <Route
-            path="/crud"
-            element={
-              <Privacidad>
-                <Crud />
-              </Privacidad>
-            }
-          />
+          <Route path="/crud" element={<Privacidad><Crud /></Privacidad>}/>
           <Route path="/solicitud" element={<Solicitud />} />
           <Route path="/factura" element={<Factura />} />
           <Route path="/vermas" element={<VerMas />} />
           <Route path="/RecoverPassword" element={<Recover />} />
           <Route path="/ResetPassword" element={<Reset />} />
-          <Route path="/devolucion" element={<Devolucion />} />
-          <Route path="/modificar-factura/:numeroFactura" element={<ModificarFactura />} />
+          <Route path="/devolucion" element={<Devolucion/>} />
+          <Route path="/modificar-usuario/:id" element={<ModificarUsuario />} />
+          <Route path="/notificaciones" element={<Notificacion />} />
+          <Route path="/devoluciones-grafica" element={<DevolucionesGrafica />} />
         </Routes>
       </div>
     </Router>
@@ -45,4 +42,3 @@ function App() {
 }
 
 export default App;
-
