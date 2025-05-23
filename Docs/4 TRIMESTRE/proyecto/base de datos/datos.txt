@@ -4,7 +4,7 @@ INSERT INTO roles (rol_code, rol_name) VALUES
 
 ----------------------------------------
 
-INSERT INTO administrador (correo, contraseña, rol_code) VALUES
+INSERT INTO administrador (correo,contraseña, rol_code) VALUES
 ('dkim44243@gmail.com', SHA2('twicebestgg', 256), 1),
 ('valentinadb13l@gmail.com', SHA2('12345', 256), 1),
 ('valentinavaquezrodriguez00@gmail.com', SHA2('54321', 256), 1),
