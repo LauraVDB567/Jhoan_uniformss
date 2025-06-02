@@ -46,16 +46,11 @@ CREATE TABLE IF NOT EXISTS `factura` (
   `nombre` VARCHAR(45) NOT NULL,
   `correo` VARCHAR(250) NOT NULL,
   `telefono` VARCHAR(45) NOT NULL,
-  `producto_id` INT(11) NOT NULL,
   `total` DOUBLE NOT NULL,
   `metodoPago` VARCHAR(45) NOT NULL,
   `token_devolucion` VARCHAR(250) NOT NULL,
   fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`numeroFactura`),
-  CONSTRAINT `fk_factura_producto`
-    FOREIGN KEY (`producto_id`)
-    REFERENCES `productos` (`id`)
-    ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Tabla de devoluciones
