@@ -11,7 +11,6 @@ INSERT INTO administrador (correo,contraseña, rol_code) VALUES
 ('vallejolorena37@gmail.com', SHA2('678910', 256), 1);
 
 ------------------------------------------------------
-
 -- Tabla de roles
 CREATE TABLE IF NOT EXISTS `roles` (
   `rol_code` INT(11) NOT NULL AUTO_INCREMENT,
@@ -44,13 +43,14 @@ CREATE TABLE IF NOT EXISTS `productos` (
 CREATE TABLE IF NOT EXISTS `factura` (
   `numeroFactura` VARCHAR(45) NOT NULL,
   `nombre` VARCHAR(45) NOT NULL,
+  `productos` VARCHAR(500) NOT NULL,
   `correo` VARCHAR(250) NOT NULL,
   `telefono` VARCHAR(45) NOT NULL,
   `total` DOUBLE NOT NULL,
   `metodoPago` VARCHAR(45) NOT NULL,
   `token_devolucion` VARCHAR(250) NOT NULL,
   fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`numeroFactura`),
+  PRIMARY KEY (`numeroFactura`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Tabla de devoluciones
